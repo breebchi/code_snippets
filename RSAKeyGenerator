@@ -1,71 +1,8 @@
-package com.apex.services.common.utilities;
 
 
 /**
- * Old solution for RSA key pairs generation
- */
-//import java.io.BufferedOutputStream;
-//import java.io.FileOutputStream;
-//import java.io.IOException;
-//import java.io.ObjectOutputStream;
-//import java.math.BigInteger;
-//import java.security.KeyFactory;
-//import java.security.KeyPair;
-//import java.security.KeyPairGenerator;
-//import java.security.NoSuchAlgorithmException;
-//import java.security.spec.RSAPrivateKeySpec;
-//import java.security.spec.RSAPublicKeySpec;
-//
-///**
-// * one time use for generation RSA keys
-// * @author TCS
-// *
-// */
-//public class RSAKeyGenerator {
-//	
-//	public static void main(String[] args) throws Exception {
-//		
-//		try {
-//			// Key pair generation
-//			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-//			kpg.initialize(1024);
-//			KeyPair kp = kpg.genKeyPair();
-//			KeyFactory fact = KeyFactory.getInstance("RSA");
-//			RSAPublicKeySpec pub = fact.getKeySpec(kp.getPublic(), RSAPublicKeySpec.class);
-//			RSAPrivateKeySpec priv = fact.getKeySpec(kp.getPrivate(),RSAPrivateKeySpec.class);
-//
-//			/**
-//			 * program to be run twice to generate 2 pairs of keys
-//			 */
-////			saveToFile("./publicKeyForSigning.key", pub.getModulus(),pub.getPublicExponent());
-////			saveToFile("./privateKeyForSigning.key", priv.getModulus(),priv.getPrivateExponent());
-////			
-//			saveToFile("./publicKeyForVerification.key", pub.getModulus(),pub.getPublicExponent());
-//			saveToFile("./privateKeyForVerification.key", priv.getModulus(),priv.getPrivateExponent());
-//
-//		
-//		} catch (NoSuchAlgorithmException e) {
-//			e.printStackTrace();
-//		}
-//		
-//
-//	}
-//	public static void saveToFile(String fileName, BigInteger mod, BigInteger exp) throws IOException {
-//		  ObjectOutputStream oout = new ObjectOutputStream(
-//		    new BufferedOutputStream(new FileOutputStream(fileName)));
-//		  try {
-//		    oout.writeObject(mod);
-//		    oout.writeObject(exp);
-//		  } catch (Exception e) {
-//		    throw new IOException("Unexpected error", e);
-//		  } finally {
-//		    oout.close();
-//		  }
-//		}
-//
-//}
-/**
- * Suggested alternative solution for RSA key pairs generation
+ * Solution for RSA key pairs generation and testing
+ * @author Mahmoud Kraiem
  */
 
 
@@ -122,7 +59,6 @@ import javax.xml.bind.DatatypeConverter;
  * - provide change path if required and file name
  * - copy/past rsaencrypt/rsadecrypt blocks [as shown] to test encryption then decryption or the reverse.
  * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
- * @author TCS/Mahmoud
  *
  */
 public class RSAKeyGenerator  {
@@ -141,31 +77,17 @@ public class RSAKeyGenerator  {
 //			byte[] pub = kp.getPublic().getEncoded();
 //			byte[] priv = kp.getPrivate().getEncoded();
 //			
-//			//KeyForSigning
 //			
-////			// Store Public Key.
-////			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
-////					pub);
-////			String fileName = path + "/publicKeyForSigningProd.key";
-////			saveKeySpecToFile(fileName, x509EncodedKeySpec );
-////						
-////			// Store Private Key.
-////			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
-////					priv);
-////			fileName = path + "/privateKeyForSigningProd.key";
-////			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
-//			
-//			//KeyForVerification
-//			
+//			// Store Public Key.
 //			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
 //					pub);
-//			String fileName = path + "/publicKeyForVerificationProd.key";
+//			String fileName = path + "/publicKey.key";
 //			saveKeySpecToFile(fileName, x509EncodedKeySpec );
 //						
 //			// Store Private Key.
 //			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
 //					priv);
-//			fileName = path + "/privateKeyForVerificationProd.key";
+//			fileName = path + "/privateKey.key";
 //			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
 //
 //			dumpKeyPair(kp);
@@ -179,17 +101,17 @@ public class RSAKeyGenerator  {
 			 * /////// Key pair conversion to .NET xml format ///////
 			 */
 			
-//			String keyFilePath = path + "/privateKeyForSigningProd.key";
-//			PrivateKey privateKey = readKeyFromFilePrivateNEW(keyFilePath);
-//			String s = getPrivateKeyXml(privateKey);
-//			String xmlkeyFilePath = path+"/privateKeyForSigningProd.xml";
-//			saveStringToFile(xmlkeyFilePath,s);
+//			String keyFilePath = path + "/privateKey.key";
+//			PrivateKey privateKey = readKeyFromFilePrivate(keyFilePath);
+//			String xmlString = getPrivateKeyXml(privateKey);
+//			String xmlkeyFilePath = path+"/privateKey.xml";
+//			saveStringToFile(xmlkeyFilePath,xmlString);
 //			
-//			keyFilePath = path + "/publicKeyForSigningProd.key";
-//			PublicKey publicKey = readKeyFromFilePublicNEW(keyFilePath);
-//			s = getPublicKeyXml(publicKey);
-//			xmlkeyFilePath = path+"/publicKeyForSigningProd.xml";
-//			saveStringToFile(xmlkeyFilePath,s);
+//			keyFilePath = path + "/publicKey.key";
+//			PublicKey publicKey = readKeyFromFilePublic(keyFilePath);
+//			xmlString = getPublicKeyXml(publicKey);
+//			xmlkeyFilePath = path+"/publicKey.xml";
+//			saveStringToFile(xmlkeyFilePath,xmlString);
 //			
 			
 			/**
@@ -202,31 +124,21 @@ public class RSAKeyGenerator  {
 			 */
 			
 			
-//			String privateKeyFilePath = path + "/privateKeyForSigningProd.key";
-//			String publicKeyFilePath = path + "/publicKeyForSigningProd.key";
-//			//String encryptedMessage = "SeFGjOIhVnnB9+8eWfy+HLtXqpYuKciBnzXRwl3wGG3HlDqLMk1ntEUlwtmIEI+/vhV51/kyTngnUOu48IpPkmIzKiIkVdUSWRNpIKIPdHqFxgRsWwr90gtmKU66Iq2D/ny4RL621Fd/M4Ue3w3e5uoagwfO3/ksfh9zNHdGFew";
-//			//String encryptedMessage = "dJuWr7MeEQ9zUaHxaYM+o/eKJ4SksbIFGDPt53KDCCvDb8lji8zglIA7xBBgWl+durjqXgxJyoOVSlBIL+O45tipWEk8Gu71Ifzrc0gT9Vi7fXAXYBWv1K8irVsiSOZQgB9RoiAD1eumDmcNmPHQC+nss5FI1z7XNn1HV9en6QI=";
-////			String encryptedWithNewXmlKey = "Qw5o6mkN6SEzkLajf/T3fimMlnkvcCnKIoL6wWd4qoRG7Pya6YbyLU9rntAPeglcJ84r6QL0cArrr0VBLLZ2KrdS1O+2k3aTmojjHcV1M600aw3DLH/U1fh/noKTSjyxpZEUBvV0PfJTn4XeeWGSSo9A8db5nVosc8NBoHhwzWQ=";
-////			String newReceivedEncryptedCC = "AIYeM5QOd6nAk+s1zJ0WTnSUIyuUukcpkbkOus7BE93Qdn5ak4a7X10eEuBzohyQh8m82lSsM8AiSFcX5bbDJuHw6xOCUUWlvwiAEBv7qHUDZU2Ag7hmkahM4+wBGCvVr+OCpf7bTnsHy7nxWZpB2UlR7GvD30mZ+n4MdVJ86xhY";
-////			String encryptByDeba = "Ag9S1aLomSiPRoA1U8PLWeG46RSRhe3DQWcfQ9GV9sZmL3tRXOUd8zo+PCgu+nYQEILc80TcY1AtqDPQK8MCzERbEReuUDsTYZQh1Uo28oF9b9mpDP2b3P/cOb7FljYvTJ5ZCA0V5Jos1sRq2SaWBfEtdNG7l7DkmLHeuS5K+zw=";
-////			String encryptByDeba2 = "DnNJAbqOHBIPGrUn3V5yWEdp5w4zPAwT1OTbepCipkjTYBKk3JQu12NsSlyPKznDuPgrAqpRRMN9mdTPATmR75PYlPrUjvIaeNOGgyWQlNrnYHygTRLLq/Tv5d34+JiDZCkbB5WINyzcN1fWH9eqmcn+6H2gayamxUeS8CrcLi8=";
-////			String encryptByDeba3 = "cbR8rl+jkfHzWNWBmGSF0aDgLHDJ9GdHRoyORKugSHrLEyYO+M4zUbHDNcuaj1CObJB8ii06g0yvlDmbkj7bLnRpvIHIcUxVI0K1QeH6Nn+cqKsF9Z6s66C3s8k/iFfOOj8891wgaToCNTxi5zVPhbDzOkJcOwZfBO4gk4uubfA=";
-////			String encryptByWayne1 = "AEulP73imFZFLDf0AmKGavycMDOax31HFwydXsH9AHhbrJS93+CRxD3I5Fw/ZQSpH8nWl80SJDXK7IpGJL586GcNpBC0XzDQqYbPmxaOoNqK4fTuuntSAVgSPIGqvpRUTWMI9JenqzwcZB94LQpEtV2TU/4y3ST/BsyEgxulKjRy";
-////			String encryptByWayne2 = "AIYeM5QOd6nAk+s1zJ0WTnSUIyuUukcpkbkOus7BE93Qdn5ak4a7X10eEuBzohyQh8m82lSsM8AiSFcX5bbDJuHw6xOCUUWlvwiAEBv7qHUDZU2Ag7hmkahM4+wBGCvVr+OCpf7bTnsHy7nxWZpB2UlR7GvD30mZ+n4MdVJ86xhY";
-////			String encryptByDeba4 = "W4p7cNN0Cwup7gdFVaOlpjd43FqQK4IhT904TsLT5WRNjDv9RCcOCRQU5jzHK7mvUCCWaQJQSsQsjJZn5OrbvB6ZYvX9JA2FtQmgR69nMTPWGdyL5yGSbxcKp6fWqyFPtvKFuBluIra69DFM3iHL1oWYyziTPEgoiSXbWJIhAVE=";
-////			byte[] encrytedCCTest = convertEncrytedStringToByteArray(encryptByDeba4);
-////			String decryptedCCNoTest = rsaDecrypt(encrytedCCTest,privateKeyFilePath);
-////			System.out.println("decrypted CCN Test = "+decryptedCCNoTest);
-//			
-//			String openMessage = "1111222255554444555";
-//			
-//			byte[] encrytedCCWithPublicKey=rsaEncrypt(openMessage.getBytes(), publicKeyFilePath);
-//			String encryptedCCToSendToUI=convertEncryptedByteToString(encrytedCCWithPublicKey);
-//			System.out.println("encrypted CCN, sent to UI = "+encryptedCCToSendToUI);
+//			String privateKeyFilePath = path + "/privateKey.key";
+//			String publicKeyFilePath = path + "/publicKey.key";
 //
-//			byte[] encrytedCCTest = convertEncrytedStringToByteArray(String.valueOf(encryptedCCToSendToUI));
-//			String decryptedCCNoTest = rsaDecrypt(encrytedCCTest,privateKeyFilePath);
-//			System.out.println("decrypted CCN Test = "+decryptedCCNoTest);
+//			String encryptedMessage = "";
+//			String openMessage = "";
+//
+//
+//			byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
+//			String decryptedMessage = rsaDecrypt(encryptedMessageBA,privateKeyFilePath);
+//			System.out.println("decrypted message = "+decryptedMessage);
+//			
+//			
+//			byte[] encryptedMessageBA=rsaEncrypt(decryptedMessage.getBytes(), publicKeyFilePath);
+//			String encryptedMessage=convertEncryptedByteToString(encryptedMessageBA);
+//			System.out.println("encrypted message = "+encryptedMessage);
 			
 			/**
 			 * /////// Key pair testing ENDS HERE ///////
@@ -239,17 +151,12 @@ public class RSAKeyGenerator  {
 			 */
 			
 			
-			String privateKeyFilePath = path + "/privateKeyForSigningProdShare.xml";
-//			String privateKeyFilePath2 = path + "privateKeyForSigningTESTfromDebaJava.xml";
-			String publicKeyFilePath = path + "/publicKeyForSigningProdShare.xml";
-			//String encryptedMessage = "SeFGjOIhVnnB9+8eWfy+HLtXqpYuKciBnzXRwl3wGG3HlDqLMk1ntEUlwtmIEI+/vhV51/kyTngnUOu48IpPkmIzKiIkVdUSWRNpIKIPdHqFxgRsWwr90gtmKU66Iq2D/ny4RL621Fd/M4Ue3w3e5uoagwfO3/ksfh9zNHdGFew";
-			String encryptedMessage = "dJuWr7MeEQ9zUaHxaYM+o/eKJ4SksbIFGDPt53KDCCvDb8lji8zglIA7xBBgWl+durjqXgxJyoOVSlBIL+O45tipWEk8Gu71Ifzrc0gT9Vi7fXAXYBWv1K8irVsiSOZQgB9RoiAD1eumDmcNmPHQC+nss5FI1z7XNn1HV9en6QI=";
-			String positivTestString = "4111111111111114";
-			String encryptByDeba = "Ag9S1aLomSiPRoA1U8PLWeG46RSRhe3DQWcfQ9GV9sZmL3tRXOUd8zo+PCgu+nYQEILc80TcY1AtqDPQK8MCzERbEReuUDsTYZQh1Uo28oF9b9mpDP2b3P/cOb7FljYvTJ5ZCA0V5Jos1sRq2SaWBfEtdNG7l7DkmLHeuS5K+zw=";
-			String encryptByDeba2 = "DnNJAbqOHBIPGrUn3V5yWEdp5w4zPAwT1OTbepCipkjTYBKk3JQu12NsSlyPKznDuPgrAqpRRMN9mdTPATmR75PYlPrUjvIaeNOGgyWQlNrnYHygTRLLq/Tv5d34+JiDZCkbB5WINyzcN1fWH9eqmcn+6H2gayamxUeS8CrcLi8=";
-			String encryptByDeba3 = "cbR8rl+jkfHzWNWBmGSF0aDgLHDJ9GdHRoyORKugSHrLEyYO+M4zUbHDNcuaj1CObJB8ii06g0yvlDmbkj7bLnRpvIHIcUxVI0K1QeH6Nn+cqKsF9Z6s66C3s8k/iFfOOj8891wgaToCNTxi5zVPhbDzOkJcOwZfBO4gk4uubfA=";
-			String prodtest = "RCT819kOQNBofbnnrjdtZAXu9ATdtmfIcU3iFVMNb3wqebZQJaiFFFxGe59Gr2gmtt/zzAr/GGFSdFabXr4DrvVi0OV9xdVzv7QyOERok+SHcilHEHyrdh7R94Z9ROH18Iv0Q8H8jXV89jOxe0fAdy4IT0NGUpRFJig1tGjCZNA=";
-
+			String privateKeyFilePath = path + "/privateKey.xml";
+			String publicKeyFilePath = path + "/publicKey.xml";
+			String encryptedMessage = "";
+			String decryptedMessage = "";
+			String openString = "";
+			
 			Properties privateKeyProperties = new Properties();
 			privateKeyProperties = readPropertiesXmlFile(privateKeyFilePath);
 			PrivateKey priv = propertiesToPrivateKey(privateKeyProperties);
@@ -258,21 +165,14 @@ public class RSAKeyGenerator  {
 			publicKeyProperties = readPropertiesXmlFile(publicKeyFilePath);
 			PublicKey pub = propertiesToPublicKey(publicKeyProperties);
 			
-			byte[] encrytedCCBytes1 = convertEncrytedStringToByteArray(prodtest);
-			String decryptedCC1 = rsaDecryptXMLTest(encrytedCCBytes1,priv);
-			System.out.println("decrypted CCN Test = "+decryptedCC1);
+			byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
+			String decryptedMessage = rsaDecryptXMLTest(encryptedMessageBA,priv);
+			System.out.println("decrypted message = "+decryptedMessage);
 			
-			byte[] encrytedCCBytes2=rsaEncryptXMLTest(decryptedCC1.getBytes(), pub);
-			String encryptedCC=convertEncryptedByteToString(encrytedCCBytes2);
-			System.out.println("encrypted CCN, sent to UI = "+encryptedCC);
+			byte[] encryptedMessageBA=rsaEncryptXMLTest(decryptedMessage.getBytes(), pub);
+			String encryptedMessage=convertEncryptedByteToString(encryptedMessageBA);
+			System.out.println("encrypted message = "+encryptedMessage);
 			
-//			byte[] encrytedCCBytes2=rsaEncryptXMLTest(positivTestString.getBytes(), pub);
-//			String encryptedCC=convertEncryptedByteToString(encrytedCCBytes2);
-//			System.out.println("encrypted CCN, sent to UI = "+encryptedCC);
-//
-//			byte[] encrytedCCBytes3 = convertEncrytedStringToByteArray(encryptedCC);
-//			String decryptedCC2 = rsaDecryptXMLTest(encrytedCCBytes3,priv);
-//			System.out.println("decrypted CCN Test = "+decryptedCC2);
 			
 			
 			/**
@@ -322,6 +222,7 @@ public class RSAKeyGenerator  {
 		
 		BigInteger privateExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("D")));
 		
+		/* comment or uncomment this part depending on your needs */
 //		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("D")),StandardCharsets.UTF_8);
 //		System.out.println("##properties.getProperty");
 //		System.out.println(properties.getProperty("D"));
@@ -441,6 +342,7 @@ public class RSAKeyGenerator  {
 		    builder.append("<RSAKeyValue>\n");
 
 		    byte[] m = privKey.getModulus().toByteArray();
+			/* comment or uncomment this part depending on your needs */
 //		    byte[] mm = stripLeadingZeros(m);
 		    byte[] mm = (m);
 
@@ -469,7 +371,7 @@ public class RSAKeyGenerator  {
 		    BigInteger dp = privKey.getPrimeExponentP();
 		    BigInteger dq = privKey.getPrimeExponentQ();
 		    BigInteger inverseQ = privKey.getCrtCoefficient();
-
+/* comment or uncomment this part depending on your needs */
 //		    StringBuilder builder = new StringBuilder();
 //		    builder.append("<RSAKeyValue>\n");
 //		    write(builder, "Modulus", stripLeadingZeros(n.toByteArray()));
@@ -556,10 +458,7 @@ public class RSAKeyGenerator  {
 			    
 			    
 	  //FOR TESTING PURPOSE ONLY
-			    
-//			    String publicKeyJavaNEW = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnaEItfB5l290qTq4I5+OtnixgS1fQWU62cdqO4KBOIOK7dBgSJ2Dm9c/7gLxNYcgU6jaSr3Gb8YGBS0XWKudXfZm6wuPew9vQJoh4NxNpNFeKp8C8fTDQoN+gjnJBQ6mkECMjEAnxAHhoIykifoWdVpS8sNWhjQzI2rzzefBVB+h+9aBI+v/GGqz0en27thN2vrIBPPeOWUDWUKjiOV2yJadPmtAs72ag00RpMd3iDStKzdl+9BkFfMRz+IDKrgiYT7m9/WmNgovdKXcs/Bg+vj3DlvQAd2w5EV5Jx9BekDmxPUPvd6ci3uvwyvqUjQyivQjQFxBSbCjA+m29Uy86QIDAQAB";
-//			    byte[] data = DatatypeConverter.parseBase64Binary(publicKeyJavaNEW);
-//			    X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+
 
 			    X509EncodedKeySpec spec = new X509EncodedKeySpec(EncodedkeyBytes);
 			    KeyFactory fact1 = KeyFactory.getInstance("RSA");
@@ -643,45 +542,7 @@ public class RSAKeyGenerator  {
 			return DatatypeConverter.printBase64Binary(encryptedByte);
 		}
 		
-		/**
-		 * private .NET prod compatible key
-		 * 
-		* <?xml version="1.0" encoding="UTF-8"?>
-		<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-		<properties>
-		<entry key="Modulus">AIKQCHuRYKVzviD3DpiuZvo1a4GwcpGKu32aFyEOiQ5m3IOYQqkQJ0XvlHNmby1I8lqo896urmOv
-		6lzL+GznUHDGr4IYxI940OYjQr9XJGAhiQVJPxt5D4enNrnHFnnEtqnPVPLJ1uHgHCm9oDPYSXrB
-		RJgHZYmsWMizobIIuvMV</entry>
-		<entry key="Exponent">AQAB</entry>
-		<entry key="P">ANFKjE35jt9J/S6hDYCrWfzHimhT3fcmKMYh6UNoxXTLtWStzNww3vOe5vgirmPA40gzTSwTxJoW
-		jEt5abJWvHc=</entry>
-		<entry key="Q">AJ+zepSgG5RhcnYfcU6/bLSs9EFpda2ACaV2wtidsQFzMxVSJ/jSjuTnS3lsEndgexZUSPbA+nfT
-		OE9UyYOfi9M=</entry>
-		<entry key="DP">bRH2sKQ/6un6QhS4nret++hZnykl4ilG0orVr8WoMcf/zmos+wuVBU1ofSRF0cKyL+xcaX4b1Vmu
-		3550kPZW3Q==</entry>
-		<entry key="DQ">aKQzh7s5Fwqa82c62Tx4wBIroci2QM8Kgw7EMSdyWd7f8/J3GoTs+HPNcmwr1Wi0fjcP8A8Wjvkp
-		hmGqAMLD3Q==</entry>
-		<entry key="InverseQ">AL5ti/mV08uXQKnTTGTo8J7dybmSqzTEEpkeGRlZZIJd2ZdeNVumZuqxqI0mtwAZnyiNuK4pRX1l
-		Htes7QS6zVY=</entry>
-		<entry key="D">FtIUGX0Ulna/kcV9EKTTLQKvUtDDhbrpAJAxYL7Ip/LEsl+nryM6qhexK+aIojKw4bXMQmzn4Fa8
-		MRIZzvczcPJafj2+i581qBt+qsbOYwpbHBi/N21iJ9quypbOyrUpa2p925GycAJvbPUny6CCJUwA
-		21bXFAKgSugH94/hfjU=</entry>
-		</properties>
-		*  */
 		
-		
-		/**
-		 * public .NET prod compatible key
-		 * 
-		* <?xml version="1.0" encoding="UTF-8"?>
-		<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-		<properties>
-		<entry key="Modulus">AIKQCHuRYKVzviD3DpiuZvo1a4GwcpGKu32aFyEOiQ5m3IOYQqkQJ0XvlHNmby1I8lqo896urmOv
-		6lzL+GznUHDGr4IYxI940OYjQr9XJGAhiQVJPxt5D4enNrnHFnnEtqnPVPLJ1uHgHCm9oDPYSXrB
-		RJgHZYmsWMizobIIuvMV</entry>
-		<entry key="Exponent">AQAB</entry>
-		</properties>
-		*  */
-
 }
+
 
