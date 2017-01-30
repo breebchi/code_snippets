@@ -49,14 +49,13 @@ import javax.xml.bind.DatatypeConverter;
  * 
  * Notice code is divided into 4 blocks
  * Use them respectively to :
- * -- 	generate new pairs of RSA keys of desired size [until now, we have been using 1024 keys]
- * -- 	extract xml files for those key pairs [the extracted files are not production ready, 
- * 		use provided examples to make prod compatible keys. Examples are provided at the end of this file]
+ * -- 	generate new pairs of RSA keys of desired size [It's set to 1024 keys as is]
+ * -- 	extract xml files for those key pairs [you might want to change the format. Just reuse theinformation in this file to  suit your need]
  * -- 	test key pairs
- * -- 	test prod compatible key pairs
+ * -- 	test xml key pairs
  * TESTING procedure : 
  * - generate key pair
- * - provide change path if required and file name
+ * - provide path and file name
  * - copy/past rsaencrypt/rsadecrypt blocks [as shown] to test encryption then decryption or the reverse.
  * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
  *
