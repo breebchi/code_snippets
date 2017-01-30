@@ -1,6 +1,5 @@
 # code_snippets
-This is where I throw potentially useful snippets of code.
-
+This is where I throw potentially useful code snippets.
 ## RSAKeyGenerator 
 I needed to generate and test RSA keys for my project and for so;e reason internet offered very poor answers.
 I made this class to serve purpose and eventually thought it would be nice to clean it and share it with people to use.
