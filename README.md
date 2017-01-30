@@ -1,7 +1,7 @@
-## code_snippets
+# code_snippets
 This is where I throw potentially useful snippets of code.
 
-# RSAKeyGenerator 
+## RSAKeyGenerator 
 I needed to generate and test RSA keys for my project and for so;e reason internet offered very poor answers.
 I made this class to serve purpose and eventually thought it would be nice to clean it and share it with people to use.
 Many people codes have been used so please inform me if you recognize your code so that I'd add a mention of that.
