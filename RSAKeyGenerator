@@ -1,0 +1,687 @@
+package com.apex.services.common.utilities;
+
+
+/**
+ * Old solution for RSA key pairs generation
+ */
+//import java.io.BufferedOutputStream;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
+//import java.io.ObjectOutputStream;
+//import java.math.BigInteger;
+//import java.security.KeyFactory;
+//import java.security.KeyPair;
+//import java.security.KeyPairGenerator;
+//import java.security.NoSuchAlgorithmException;
+//import java.security.spec.RSAPrivateKeySpec;
+//import java.security.spec.RSAPublicKeySpec;
+//
+///**
+// * one time use for generation RSA keys
+// * @author TCS
+// *
+// */
+//public class RSAKeyGenerator {
+//	
+//	public static void main(String[] args) throws Exception {
+//		
+//		try {
+//			// Key pair generation
+//			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+//			kpg.initialize(1024);
+//			KeyPair kp = kpg.genKeyPair();
+//			KeyFactory fact = KeyFactory.getInstance("RSA");
+//			RSAPublicKeySpec pub = fact.getKeySpec(kp.getPublic(), RSAPublicKeySpec.class);
+//			RSAPrivateKeySpec priv = fact.getKeySpec(kp.getPrivate(),RSAPrivateKeySpec.class);
+//
+//			/**
+//			 * program to be run twice to generate 2 pairs of keys
+//			 */
+////			saveToFile("./publicKeyForSigning.key", pub.getModulus(),pub.getPublicExponent());
+////			saveToFile("./privateKeyForSigning.key", priv.getModulus(),priv.getPrivateExponent());
+////			
+//			saveToFile("./publicKeyForVerification.key", pub.getModulus(),pub.getPublicExponent());
+//			saveToFile("./privateKeyForVerification.key", priv.getModulus(),priv.getPrivateExponent());
+//
+//		
+//		} catch (NoSuchAlgorithmException e) {
+//			e.printStackTrace();
+//		}
+//		
+//
+//	}
+//	public static void saveToFile(String fileName, BigInteger mod, BigInteger exp) throws IOException {
+//		  ObjectOutputStream oout = new ObjectOutputStream(
+//		    new BufferedOutputStream(new FileOutputStream(fileName)));
+//		  try {
+//		    oout.writeObject(mod);
+//		    oout.writeObject(exp);
+//		  } catch (Exception e) {
+//		    throw new IOException("Unexpected error", e);
+//		  } finally {
+//		    oout.close();
+//		  }
+//		}
+//
+//}
+/**
+ * Suggested alternative solution for RSA key pairs generation
+ */
+
+
+
+
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.xml.bind.DatatypeConverter;
+
+
+
+/**
+ * 
+ * Make a new Java project and run this code as a Java application
+ * 
+ * 
+ * 
+ * Notice code is divided into 4 blocks
+ * Use them respectively to :
+ * -- 	generate new pairs of RSA keys of desired size [until now, we have been using 1024 keys]
+ * -- 	extract xml files for those key pairs [the extracted files are not production ready, 
+ * 		use provided examples to make prod compatible keys. Examples are provided at the end of this file]
+ * -- 	test key pairs
+ * -- 	test prod compatible key pairs
+ * TESTING procedure : 
+ * - generate key pair
+ * - provide change path if required and file name
+ * - copy/past rsaencrypt/rsadecrypt blocks [as shown] to test encryption then decryption or the reverse.
+ * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
+ * @author TCS/Mahmoud
+ *
+ */
+public class RSAKeyGenerator  {
+	
+	public static void main(String[] args) throws Exception  {
+		String path = "D:\\NEWKEYS";
+		try {
+			
+			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+			/**
+			 * /////// Key pair generation///////
+			 */
+
+//			kpg.initialize(1024);
+//			KeyPair kp = kpg.genKeyPair();
+//			byte[] pub = kp.getPublic().getEncoded();
+//			byte[] priv = kp.getPrivate().getEncoded();
+//			
+//			//KeyForSigning
+//			
+////			// Store Public Key.
+////			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
+////					pub);
+////			String fileName = path + "/publicKeyForSigningProd.key";
+////			saveKeySpecToFile(fileName, x509EncodedKeySpec );
+////						
+////			// Store Private Key.
+////			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
+////					priv);
+////			fileName = path + "/privateKeyForSigningProd.key";
+////			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
+//			
+//			//KeyForVerification
+//			
+//			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
+//					pub);
+//			String fileName = path + "/publicKeyForVerificationProd.key";
+//			saveKeySpecToFile(fileName, x509EncodedKeySpec );
+//						
+//			// Store Private Key.
+//			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
+//					priv);
+//			fileName = path + "/privateKeyForVerificationProd.key";
+//			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
+//
+//			dumpKeyPair(kp);
+
+			/**
+			 * /////// Key pair generation ENDS HERE///////
+			 */
+			
+		
+			/**
+			 * /////// Key pair conversion to .NET xml format ///////
+			 */
+			
+//			String keyFilePath = path + "/privateKeyForSigningProd.key";
+//			PrivateKey privateKey = readKeyFromFilePrivateNEW(keyFilePath);
+//			String s = getPrivateKeyXml(privateKey);
+//			String xmlkeyFilePath = path+"/privateKeyForSigningProd.xml";
+//			saveStringToFile(xmlkeyFilePath,s);
+//			
+//			keyFilePath = path + "/publicKeyForSigningProd.key";
+//			PublicKey publicKey = readKeyFromFilePublicNEW(keyFilePath);
+//			s = getPublicKeyXml(publicKey);
+//			xmlkeyFilePath = path+"/publicKeyForSigningProd.xml";
+//			saveStringToFile(xmlkeyFilePath,s);
+//			
+			
+			/**
+			 * /////// Key pair conversion to .NET xml format ENDS HERE ///////
+			 */
+			
+			
+			/**
+			 * /////// Key pair testing STARTS HERE ///////
+			 */
+			
+			
+//			String privateKeyFilePath = path + "/privateKeyForSigningProd.key";
+//			String publicKeyFilePath = path + "/publicKeyForSigningProd.key";
+//			//String encryptedMessage = "SeFGjOIhVnnB9+8eWfy+HLtXqpYuKciBnzXRwl3wGG3HlDqLMk1ntEUlwtmIEI+/vhV51/kyTngnUOu48IpPkmIzKiIkVdUSWRNpIKIPdHqFxgRsWwr90gtmKU66Iq2D/ny4RL621Fd/M4Ue3w3e5uoagwfO3/ksfh9zNHdGFew";
+//			//String encryptedMessage = "dJuWr7MeEQ9zUaHxaYM+o/eKJ4SksbIFGDPt53KDCCvDb8lji8zglIA7xBBgWl+durjqXgxJyoOVSlBIL+O45tipWEk8Gu71Ifzrc0gT9Vi7fXAXYBWv1K8irVsiSOZQgB9RoiAD1eumDmcNmPHQC+nss5FI1z7XNn1HV9en6QI=";
+////			String encryptedWithNewXmlKey = "Qw5o6mkN6SEzkLajf/T3fimMlnkvcCnKIoL6wWd4qoRG7Pya6YbyLU9rntAPeglcJ84r6QL0cArrr0VBLLZ2KrdS1O+2k3aTmojjHcV1M600aw3DLH/U1fh/noKTSjyxpZEUBvV0PfJTn4XeeWGSSo9A8db5nVosc8NBoHhwzWQ=";
+////			String newReceivedEncryptedCC = "AIYeM5QOd6nAk+s1zJ0WTnSUIyuUukcpkbkOus7BE93Qdn5ak4a7X10eEuBzohyQh8m82lSsM8AiSFcX5bbDJuHw6xOCUUWlvwiAEBv7qHUDZU2Ag7hmkahM4+wBGCvVr+OCpf7bTnsHy7nxWZpB2UlR7GvD30mZ+n4MdVJ86xhY";
+////			String encryptByDeba = "Ag9S1aLomSiPRoA1U8PLWeG46RSRhe3DQWcfQ9GV9sZmL3tRXOUd8zo+PCgu+nYQEILc80TcY1AtqDPQK8MCzERbEReuUDsTYZQh1Uo28oF9b9mpDP2b3P/cOb7FljYvTJ5ZCA0V5Jos1sRq2SaWBfEtdNG7l7DkmLHeuS5K+zw=";
+////			String encryptByDeba2 = "DnNJAbqOHBIPGrUn3V5yWEdp5w4zPAwT1OTbepCipkjTYBKk3JQu12NsSlyPKznDuPgrAqpRRMN9mdTPATmR75PYlPrUjvIaeNOGgyWQlNrnYHygTRLLq/Tv5d34+JiDZCkbB5WINyzcN1fWH9eqmcn+6H2gayamxUeS8CrcLi8=";
+////			String encryptByDeba3 = "cbR8rl+jkfHzWNWBmGSF0aDgLHDJ9GdHRoyORKugSHrLEyYO+M4zUbHDNcuaj1CObJB8ii06g0yvlDmbkj7bLnRpvIHIcUxVI0K1QeH6Nn+cqKsF9Z6s66C3s8k/iFfOOj8891wgaToCNTxi5zVPhbDzOkJcOwZfBO4gk4uubfA=";
+////			String encryptByWayne1 = "AEulP73imFZFLDf0AmKGavycMDOax31HFwydXsH9AHhbrJS93+CRxD3I5Fw/ZQSpH8nWl80SJDXK7IpGJL586GcNpBC0XzDQqYbPmxaOoNqK4fTuuntSAVgSPIGqvpRUTWMI9JenqzwcZB94LQpEtV2TU/4y3ST/BsyEgxulKjRy";
+////			String encryptByWayne2 = "AIYeM5QOd6nAk+s1zJ0WTnSUIyuUukcpkbkOus7BE93Qdn5ak4a7X10eEuBzohyQh8m82lSsM8AiSFcX5bbDJuHw6xOCUUWlvwiAEBv7qHUDZU2Ag7hmkahM4+wBGCvVr+OCpf7bTnsHy7nxWZpB2UlR7GvD30mZ+n4MdVJ86xhY";
+////			String encryptByDeba4 = "W4p7cNN0Cwup7gdFVaOlpjd43FqQK4IhT904TsLT5WRNjDv9RCcOCRQU5jzHK7mvUCCWaQJQSsQsjJZn5OrbvB6ZYvX9JA2FtQmgR69nMTPWGdyL5yGSbxcKp6fWqyFPtvKFuBluIra69DFM3iHL1oWYyziTPEgoiSXbWJIhAVE=";
+////			byte[] encrytedCCTest = convertEncrytedStringToByteArray(encryptByDeba4);
+////			String decryptedCCNoTest = rsaDecrypt(encrytedCCTest,privateKeyFilePath);
+////			System.out.println("decrypted CCN Test = "+decryptedCCNoTest);
+//			
+//			String openMessage = "1111222255554444555";
+//			
+//			byte[] encrytedCCWithPublicKey=rsaEncrypt(openMessage.getBytes(), publicKeyFilePath);
+//			String encryptedCCToSendToUI=convertEncryptedByteToString(encrytedCCWithPublicKey);
+//			System.out.println("encrypted CCN, sent to UI = "+encryptedCCToSendToUI);
+//
+//			byte[] encrytedCCTest = convertEncrytedStringToByteArray(String.valueOf(encryptedCCToSendToUI));
+//			String decryptedCCNoTest = rsaDecrypt(encrytedCCTest,privateKeyFilePath);
+//			System.out.println("decrypted CCN Test = "+decryptedCCNoTest);
+			
+			/**
+			 * /////// Key pair testing ENDS HERE ///////
+			 */
+			
+			
+			
+			/**
+			 * /////// XML Key pair testing STARTS HERE ///////
+			 */
+			
+			
+			String privateKeyFilePath = path + "/privateKeyForSigningProdShare.xml";
+//			String privateKeyFilePath2 = path + "privateKeyForSigningTESTfromDebaJava.xml";
+			String publicKeyFilePath = path + "/publicKeyForSigningProdShare.xml";
+			//String encryptedMessage = "SeFGjOIhVnnB9+8eWfy+HLtXqpYuKciBnzXRwl3wGG3HlDqLMk1ntEUlwtmIEI+/vhV51/kyTngnUOu48IpPkmIzKiIkVdUSWRNpIKIPdHqFxgRsWwr90gtmKU66Iq2D/ny4RL621Fd/M4Ue3w3e5uoagwfO3/ksfh9zNHdGFew";
+			String encryptedMessage = "dJuWr7MeEQ9zUaHxaYM+o/eKJ4SksbIFGDPt53KDCCvDb8lji8zglIA7xBBgWl+durjqXgxJyoOVSlBIL+O45tipWEk8Gu71Ifzrc0gT9Vi7fXAXYBWv1K8irVsiSOZQgB9RoiAD1eumDmcNmPHQC+nss5FI1z7XNn1HV9en6QI=";
+			String positivTestString = "4111111111111114";
+			String encryptByDeba = "Ag9S1aLomSiPRoA1U8PLWeG46RSRhe3DQWcfQ9GV9sZmL3tRXOUd8zo+PCgu+nYQEILc80TcY1AtqDPQK8MCzERbEReuUDsTYZQh1Uo28oF9b9mpDP2b3P/cOb7FljYvTJ5ZCA0V5Jos1sRq2SaWBfEtdNG7l7DkmLHeuS5K+zw=";
+			String encryptByDeba2 = "DnNJAbqOHBIPGrUn3V5yWEdp5w4zPAwT1OTbepCipkjTYBKk3JQu12NsSlyPKznDuPgrAqpRRMN9mdTPATmR75PYlPrUjvIaeNOGgyWQlNrnYHygTRLLq/Tv5d34+JiDZCkbB5WINyzcN1fWH9eqmcn+6H2gayamxUeS8CrcLi8=";
+			String encryptByDeba3 = "cbR8rl+jkfHzWNWBmGSF0aDgLHDJ9GdHRoyORKugSHrLEyYO+M4zUbHDNcuaj1CObJB8ii06g0yvlDmbkj7bLnRpvIHIcUxVI0K1QeH6Nn+cqKsF9Z6s66C3s8k/iFfOOj8891wgaToCNTxi5zVPhbDzOkJcOwZfBO4gk4uubfA=";
+			String prodtest = "RCT819kOQNBofbnnrjdtZAXu9ATdtmfIcU3iFVMNb3wqebZQJaiFFFxGe59Gr2gmtt/zzAr/GGFSdFabXr4DrvVi0OV9xdVzv7QyOERok+SHcilHEHyrdh7R94Z9ROH18Iv0Q8H8jXV89jOxe0fAdy4IT0NGUpRFJig1tGjCZNA=";
+
+			Properties privateKeyProperties = new Properties();
+			privateKeyProperties = readPropertiesXmlFile(privateKeyFilePath);
+			PrivateKey priv = propertiesToPrivateKey(privateKeyProperties);
+			
+			Properties publicKeyProperties = new Properties();
+			publicKeyProperties = readPropertiesXmlFile(publicKeyFilePath);
+			PublicKey pub = propertiesToPublicKey(publicKeyProperties);
+			
+			byte[] encrytedCCBytes1 = convertEncrytedStringToByteArray(prodtest);
+			String decryptedCC1 = rsaDecryptXMLTest(encrytedCCBytes1,priv);
+			System.out.println("decrypted CCN Test = "+decryptedCC1);
+			
+			byte[] encrytedCCBytes2=rsaEncryptXMLTest(decryptedCC1.getBytes(), pub);
+			String encryptedCC=convertEncryptedByteToString(encrytedCCBytes2);
+			System.out.println("encrypted CCN, sent to UI = "+encryptedCC);
+			
+//			byte[] encrytedCCBytes2=rsaEncryptXMLTest(positivTestString.getBytes(), pub);
+//			String encryptedCC=convertEncryptedByteToString(encrytedCCBytes2);
+//			System.out.println("encrypted CCN, sent to UI = "+encryptedCC);
+//
+//			byte[] encrytedCCBytes3 = convertEncrytedStringToByteArray(encryptedCC);
+//			String decryptedCC2 = rsaDecryptXMLTest(encrytedCCBytes3,priv);
+//			System.out.println("decrypted CCN Test = "+decryptedCC2);
+			
+			
+			/**
+			 * /////// XML Key pair testing ENDS HERE ///////
+			 */
+		
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+
+	}
+
+
+	
+	public static Properties readPropertiesXmlFile (String filename) {
+		
+		File file = new File(filename);
+		Properties properties = new Properties();
+		try {
+			
+			FileInputStream fileInput = new FileInputStream(file);
+			
+			properties.loadFromXML(fileInput);
+			fileInput.close();
+
+			Enumeration enuKeys = properties.keys();
+			while (enuKeys.hasMoreElements()) {
+				String key = (String) enuKeys.nextElement();
+				String value = properties.getProperty(key);
+				System.out.println(key + ": " + value);
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return properties;
+	}
+	
+	
+	public static PrivateKey propertiesToPrivateKey (Properties properties) {
+		
+		
+		BigInteger privateExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("D")));
+		
+//		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("D")),StandardCharsets.UTF_8);
+//		System.out.println("##properties.getProperty");
+//		System.out.println(properties.getProperty("D"));
+//		System.out.println("##convertEncrytedStringToByteArray");
+//		System.out.println(convertEncrytedStringToByteArray(properties.getProperty("D")));
+//		System.out.println("##byte[] to String");
+//		System.out.println(pe);
+//		BigInteger privateExponent = new BigInteger(pe.replace(" ", ""),16);
+		
+		BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+//		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+//		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
+
+        try {                    
+            RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(modulus, privateExponent);
+
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+
+            PrivateKey priv = factory.generatePrivate(privateSpec); 
+
+            System.out.println("Private Key : "+ convertEncryptedByteToString( priv.getEncoded() ));
+			
+			return priv;
+        }                        
+        catch( Exception e ) {   
+            System.out.println(e.toString());  
+				return null;
+        } 
+		
+	}
+	
+	
+	
+	public static PublicKey propertiesToPublicKey (Properties properties) {
+	
+		
+		BigInteger publicExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
+//		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
+//		BigInteger publicExponent = new BigInteger(pe.replace(" ", ""),16);
+		
+		BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+//		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+//		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
+
+        try {                    
+            RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, publicExponent);
+
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+
+            PublicKey pub = factory.generatePublic(publicSpec);
+
+            System.out.println("Public Key : "+ convertEncryptedByteToString( pub.getEncoded() ));
+			
+			return pub;
+        }                        
+        catch( Exception e ) {   
+            System.out.println(e.toString());   
+				return null;
+        }
+
+	}
+	
+	
+	public  static byte[] rsaEncryptXMLTest(byte[] data, PublicKey pubKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+		  Cipher cipher = Cipher.getInstance("RSA");
+		  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+		  byte[] cipherData = cipher.doFinal(data);
+		  return cipherData;
+		}
+	
+	public static  String rsaDecryptXMLTest(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+		  Cipher cipher = Cipher.getInstance("RSA");
+		  cipher.init(Cipher.DECRYPT_MODE, privateKey);
+		  byte[] cipherData = cipher.doFinal(data);
+		  String decryptedText = new String(cipherData);
+		  return decryptedText;
+		}
+	
+	
+	public static void saveKeySpecToFile(String fileName, EncodedKeySpec encodedKeySpec ) throws IOException {
+		  
+		  FileOutputStream fos = new FileOutputStream(fileName);
+		  
+		  try {
+			 fos.write(encodedKeySpec.getEncoded());
+		  } catch (Exception e) {
+		    throw new IOException("Unexpected error", e);
+		  } finally {
+			  fos.close();
+		  }
+		}
+	
+	
+	
+	
+	private static void dumpKeyPair(KeyPair keyPair) {
+		PublicKey pub = keyPair.getPublic();
+		
+		System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pub.getEncoded()));
+ 
+		PrivateKey priv = keyPair.getPrivate();
+		
+		System.out.println("Private Key: " + DatatypeConverter.printBase64Binary(priv.getEncoded()));
+	}
+	
+	
+	/**
+	   * Gets the RSA Public key as XML string.
+	   * @param key RSAPublicKey
+	   * @return String XML representation of RSA Public Key.
+	   * @throws UnsupportedEncodingException
+	   */
+	 private static String getPublicKeyXml(PublicKey pk) throws UnsupportedEncodingException {
+
+		 RSAPublicKey  privKey = (RSAPublicKey) pk;
+		    StringBuilder builder = new StringBuilder();
+		    builder.append("<RSAKeyValue>\n");
+
+		    byte[] m = privKey.getModulus().toByteArray();
+//		    byte[] mm = stripLeadingZeros(m);
+		    byte[] mm = (m);
+
+		    write(builder, "Modulus", mm);
+		    write(builder, "Exponent", privKey.getPublicExponent());
+
+		    builder.append("</RSAKeyValue>");
+
+		    return builder.toString();
+		}
+	 
+	 /**
+	  * Gets the RSA Private key as XML string.
+	  * @param PrivateKey
+	  * @return String XML representation of RSA Private Key.
+	  * @throws UnsupportedEncodingException
+	  */
+
+		private static String getPrivateKeyXml(PrivateKey pk) throws UnsupportedEncodingException {
+		    RSAPrivateCrtKey privKey = (RSAPrivateCrtKey) pk;
+		    BigInteger n = privKey.getModulus();
+		    BigInteger e = privKey.getPublicExponent();
+		    BigInteger d = privKey.getPrivateExponent();
+		    BigInteger p = privKey.getPrimeP();
+		    BigInteger q = privKey.getPrimeQ();
+		    BigInteger dp = privKey.getPrimeExponentP();
+		    BigInteger dq = privKey.getPrimeExponentQ();
+		    BigInteger inverseQ = privKey.getCrtCoefficient();
+
+//		    StringBuilder builder = new StringBuilder();
+//		    builder.append("<RSAKeyValue>\n");
+//		    write(builder, "Modulus", stripLeadingZeros(n.toByteArray()));
+//		    write(builder, "Exponent", stripLeadingZeros(e.toByteArray()));
+//		    write(builder, "P", stripLeadingZeros(p.toByteArray()));
+//		    write(builder, "Q", stripLeadingZeros(q.toByteArray()));
+//		    write(builder, "DP", stripLeadingZeros(dp.toByteArray()));
+//		    write(builder, "DQ", stripLeadingZeros(dq.toByteArray()));
+//		    write(builder, "InverseQ", stripLeadingZeros(inverseQ.toByteArray()));
+//		    write(builder, "D", stripLeadingZeros(d.toByteArray()));
+//		    builder.append("</RSAKeyValue>");
+		    
+		    
+		    StringBuilder builder = new StringBuilder();
+		    builder.append("<RSAKeyValue>\n");
+		    write(builder, "Modulus", (n.toByteArray()));
+		    write(builder, "Exponent", (e.toByteArray()));
+		    write(builder, "P", (p.toByteArray()));
+		    write(builder, "Q", (q.toByteArray()));
+		    write(builder, "DP", (dp.toByteArray()));
+		    write(builder, "DQ", (dq.toByteArray()));
+		    write(builder, "InverseQ", (inverseQ.toByteArray()));
+		    write(builder, "D", (d.toByteArray()));
+		    builder.append("</RSAKeyValue>");
+		    
+		    
+
+		    return builder.toString();
+		}
+
+		private static void write(StringBuilder builder, String tag, byte[] bigInt) throws UnsupportedEncodingException {
+		    builder.append("\t<");
+		    builder.append(tag);
+		    builder.append(">");
+		    builder.append(encode(bigInt).trim());
+		    builder.append("</");
+		    builder.append(tag);
+		    builder.append(">\n");
+		}
+
+		private static void write(StringBuilder builder, String tag, BigInteger bigInt) throws UnsupportedEncodingException {
+		    builder.append("\t<");
+		    builder.append(tag);
+		    builder.append(">");
+		    builder.append(encode(bigInt));
+		    builder.append("</");
+		    builder.append(tag);
+		    builder.append(">\n");
+		}
+
+		private static String encode(BigInteger bigInt) throws UnsupportedEncodingException {
+		    return new String(new sun.misc.BASE64Encoder().encode(bigInt.toByteArray()));
+		}
+
+		private static String encode(byte[] bigInt) throws UnsupportedEncodingException {
+		    return new String(new sun.misc.BASE64Encoder().encode(bigInt));
+		}
+
+		private static byte[] stripLeadingZeros(byte[] a) {
+		    int lastZero = -1;
+		    for (int i = 0; i < a.length; i++) {
+		        if (a[i] == 0) {
+		            lastZero = i;
+		        } else {
+		            break;
+		        }
+		    }
+		    lastZero++;
+		    byte[] result = new byte[a.length - lastZero];
+		    System.arraycopy(a, lastZero, result, 0, result.length);
+		    return result;
+		}
+		
+		
+		 public static PublicKey readKeyFromFilePublicNEW(String keyFilePath) throws IOException {
+			  
+			    File f = new File( keyFilePath );
+			    FileInputStream fis = new FileInputStream(f);
+			    DataInputStream dis = new DataInputStream(fis);
+			    
+			    byte[] EncodedkeyBytes = new byte[(int)f.length()];
+			    try {
+			    dis.readFully(EncodedkeyBytes);
+			    
+			    
+	  //FOR TESTING PURPOSE ONLY
+			    
+//			    String publicKeyJavaNEW = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnaEItfB5l290qTq4I5+OtnixgS1fQWU62cdqO4KBOIOK7dBgSJ2Dm9c/7gLxNYcgU6jaSr3Gb8YGBS0XWKudXfZm6wuPew9vQJoh4NxNpNFeKp8C8fTDQoN+gjnJBQ6mkECMjEAnxAHhoIykifoWdVpS8sNWhjQzI2rzzefBVB+h+9aBI+v/GGqz0en27thN2vrIBPPeOWUDWUKjiOV2yJadPmtAs72ag00RpMd3iDStKzdl+9BkFfMRz+IDKrgiYT7m9/WmNgovdKXcs/Bg+vj3DlvQAd2w5EV5Jx9BekDmxPUPvd6ci3uvwyvqUjQyivQjQFxBSbCjA+m29Uy86QIDAQAB";
+//			    byte[] data = DatatypeConverter.parseBase64Binary(publicKeyJavaNEW);
+//			    X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+
+			    X509EncodedKeySpec spec = new X509EncodedKeySpec(EncodedkeyBytes);
+			    KeyFactory fact1 = KeyFactory.getInstance("RSA");
+			    PublicKey  publ = fact1.generatePublic(spec);
+			    return publ;
+			  
+			  } catch (Exception e) {
+			    throw new RuntimeException("Spurious serialisation error", e);
+			  } finally {
+				  dis.close();
+			  }
+			}
+		 
+		 
+		 public static PrivateKey  readKeyFromFilePrivateNEW(String keyFilePath) throws IOException {
+			    
+			    File f = new File(keyFilePath );
+			    FileInputStream fis = new FileInputStream(f);
+			    DataInputStream dis = new DataInputStream(fis);
+				  
+			    try {
+				    byte[] EncodedkeyBytes = new byte[(int)f.length()];
+				    dis.readFully(EncodedkeyBytes);
+			    
+			    PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(EncodedkeyBytes);
+			    KeyFactory fact1 = KeyFactory.getInstance("RSA");
+			    PrivateKey privateKey = fact1.generatePrivate(keySpec1);
+		    
+			    return privateKey;
+			  } catch (Exception e) {
+			    throw new RuntimeException("Spurious serialisation error", e);
+			  } finally {
+				  dis.close();
+			  }
+			}
+		 
+		 
+		 public static void saveStringToFile(String fileName, String s ) throws IOException {
+			  
+			  FileOutputStream fos = new FileOutputStream(fileName);
+
+			  try {
+				 fos.write(s.getBytes()); //check which charset is required on .NET application
+			  } catch (Exception e) {
+			    throw new IOException("Unexpected error", e);
+			  } finally {
+				  fos.close();
+//			    oout.close();
+			  }
+			}
+		 
+		 public  static byte[] rsaEncrypt(byte[] data,String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+			  PublicKey pubKey = readKeyFromFilePublicNEW(fileName);
+			  System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pubKey.getEncoded()));
+			  Cipher cipher = Cipher.getInstance("RSA");
+			  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+			  byte[] cipherData = cipher.doFinal(data);
+			  return cipherData;
+			}
+		
+		public static  String rsaDecrypt(byte[] data,String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+			  PrivateKey privateKey = readKeyFromFilePrivateNEW(fileName);
+			  Cipher cipher = Cipher.getInstance("RSA");
+			  cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			  
+			  System.out.println("message size in bytes" + data.length);
+			  byte[] cipherData = cipher.doFinal(data);
+			  String decryptedText = new String(cipherData);
+			  return decryptedText;
+			}
+		
+		public static byte[] convertEncrytedStringToByteArray(String encryptedString){
+			//return DatatypeConverter.parseHexBinary(encryptedString);
+			return DatatypeConverter.parseBase64Binary(encryptedString);
+//			 Base64.Decoder decodeExt = Base64.getDecoder();
+//			 return decodeExt.decode(encryptedString);
+		}
+
+		
+		public static  String convertEncryptedByteToString(byte[] encryptedByte){
+			return DatatypeConverter.printBase64Binary(encryptedByte);
+		}
+		
+		/**
+		 * private .NET prod compatible key
+		 * 
+		* <?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+		<properties>
+		<entry key="Modulus">AIKQCHuRYKVzviD3DpiuZvo1a4GwcpGKu32aFyEOiQ5m3IOYQqkQJ0XvlHNmby1I8lqo896urmOv
+		6lzL+GznUHDGr4IYxI940OYjQr9XJGAhiQVJPxt5D4enNrnHFnnEtqnPVPLJ1uHgHCm9oDPYSXrB
+		RJgHZYmsWMizobIIuvMV</entry>
+		<entry key="Exponent">AQAB</entry>
+		<entry key="P">ANFKjE35jt9J/S6hDYCrWfzHimhT3fcmKMYh6UNoxXTLtWStzNww3vOe5vgirmPA40gzTSwTxJoW
+		jEt5abJWvHc=</entry>
+		<entry key="Q">AJ+zepSgG5RhcnYfcU6/bLSs9EFpda2ACaV2wtidsQFzMxVSJ/jSjuTnS3lsEndgexZUSPbA+nfT
+		OE9UyYOfi9M=</entry>
+		<entry key="DP">bRH2sKQ/6un6QhS4nret++hZnykl4ilG0orVr8WoMcf/zmos+wuVBU1ofSRF0cKyL+xcaX4b1Vmu
+		3550kPZW3Q==</entry>
+		<entry key="DQ">aKQzh7s5Fwqa82c62Tx4wBIroci2QM8Kgw7EMSdyWd7f8/J3GoTs+HPNcmwr1Wi0fjcP8A8Wjvkp
+		hmGqAMLD3Q==</entry>
+		<entry key="InverseQ">AL5ti/mV08uXQKnTTGTo8J7dybmSqzTEEpkeGRlZZIJd2ZdeNVumZuqxqI0mtwAZnyiNuK4pRX1l
+		Htes7QS6zVY=</entry>
+		<entry key="D">FtIUGX0Ulna/kcV9EKTTLQKvUtDDhbrpAJAxYL7Ip/LEsl+nryM6qhexK+aIojKw4bXMQmzn4Fa8
+		MRIZzvczcPJafj2+i581qBt+qsbOYwpbHBi/N21iJ9quypbOyrUpa2p925GycAJvbPUny6CCJUwA
+		21bXFAKgSugH94/hfjU=</entry>
+		</properties>
+		*  */
+		
+		
+		/**
+		 * public .NET prod compatible key
+		 * 
+		* <?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+		<properties>
+		<entry key="Modulus">AIKQCHuRYKVzviD3DpiuZvo1a4GwcpGKu32aFyEOiQ5m3IOYQqkQJ0XvlHNmby1I8lqo896urmOv
+		6lzL+GznUHDGr4IYxI940OYjQr9XJGAhiQVJPxt5D4enNrnHFnnEtqnPVPLJ1uHgHCm9oDPYSXrB
+		RJgHZYmsWMizobIIuvMV</entry>
+		<entry key="Exponent">AQAB</entry>
+		</properties>
+		*  */
+
+}
+
