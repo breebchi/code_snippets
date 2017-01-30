@@ -21,3 +21,12 @@ HOW TO USE IT :
  * - provide path and file name
  * - copy/past rsaencrypt/rsadecrypt blocks [as shown] to test encryption then decryption or the reverse.
  * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
+ 
+Please feel free to copy, modify and redistribute my code. Mentioning where you got would be much appreciated.
+
+## credit_card_magnet_reader
+I had to enable the user to manually enter a credit card number and also be able to swipe the magnetic stripe of the card into the same field to parse the information it contains.
+At that time I did not find any code that did the dual reading method thing. 
+For magnetic stripe reader I used a modified version of Wayne Walrath's "JavaScript Magstripe (track 1, track2) data parser object" (2005).
+
+Please feel free to copy, modify and redistribute my code. Mentioning where you got would be much appreciated.
