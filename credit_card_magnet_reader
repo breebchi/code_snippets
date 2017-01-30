@@ -1,221 +1,228 @@
+  /**
+  *This is the code I used in the anugularjs controller to
+  * -- detect if the user is doing a manual entry or swiping the magnetic stripe of the credit card (CC)
+  * -- call the card reader object and parse the credit card number (CCN) string 
+  * -- format the CCN
+  * -- mask the CCN
+  */
+ $scope.tempCardNumber = "";
+
+ $scope.swiping = false;
+
+ // this detects if the user is doing a manual entry or swiping the magnetic stripe of the credit card (CC)
+ $scope.isNumberKey = function(event) {
+   var charCode = event.which || event.keyCode;
+   console.log(String.fromCharCode(charCode));
+   $scope.tempCardNumber = ($scope.tempCardNumber == null) ? $scope.tempCardNumber = "" : $scope.tempCardNumber;
+   if ($scope.tempCardNumber == "" && charCode == 37) {
+    $("#CCD").removeAttr("maxlength");
+    $scope.swiping = true;
+    return true;
+   } else if ($scope.swiping === true && $scope.tempCardNumber.indexOf("%") === 0) {
+    if (String.fromCharCode(charCode) === "?") {
+     $scope.tempCardNumber = $scope.tempCardNumber + "?";
+     $scope.swiping = false;
+     $scope.parseCard();
+     $("#CCD").attr("maxlength", "19");
+     event.preventDefault();
+     return false;
+    }
+    return true;
+   } else if ($scope.swiping === false) {
+
+    var temp = $scope.tempCardNumber;
+    var count = (temp.match(/-/g) || []).length;
+    maxLength = (19 + count).toString();
+    $("#CCD").attr("maxlength", maxLength);
+
+    if (charCode >= 48 && charCode <= 57) {
+     return true;
+    } else {
+     event.preventDefault();
+     return false;
+    }
+
+
+   }
+  }
+  //////////////////////////////////////
+
+ //this returns a masked CCN
+ $scope.maskCcn = function(n) {
+  if (n != "" && n != null) {
+   var cardArray = n.split("-");
+   var re = /\d(?=\d{4})/gm;
+   var subst = 'x';
+   var str = '';
+   for (var i = 0; i < cardArray.length; i++) {
+    str = str + cardArray[i];
+   }
+
+   var result = str.replace(re, subst);
+   char = {
+    4: '-',
+    8: '-',
+    12: '-',
+    16: '-'
+   };
+   obj = '';
+   for (var i = 0; i < result.length; i++) {
+    obj += (char[i] || '') + result[i];
+   }
+   return obj;
+  }
+ }
+
+ // this formats the CCN
+ $scope.formatCardNumber = function() {
+  if ($scope.tempCardNumber.indexOf("x") === -1 && $scope.tempCardNumber.indexOf("X") === -1) {
+   //minimum size of CCN is 12, else modal is emptied when out of focus
+   if ($scope.tempCardNumber.length < 12) {
+    $scope.tempCardNumber = "";
+   } else {
+    var obj = $scope.tempCardNumber;
+    console.log(obj);
+    var numbers = obj.replace(/\D/g, '');
+    $scope.CCDetails.cardNumber = numbers;
+    char = {
+     4: '-',
+     8: '-',
+     12: '-',
+     16: '-'
+    };
+    obj = '';
+    for (var i = 0; i < numbers.length; i++) {
+     obj += (char[i] || '') + numbers[i];
+    }
+    $scope.tempCardNumber = obj;
+   }
+  } else {
+   if ($scope.tempCardNumber != "" && $scope.tempCardNumber != null) {
+    var cardArray = $scope.tempCardNumber.split("-");
+    var str = '';
+    for (var i = 0; i < cardArray.length; i++) {
+     str = str + cardArray[i];
+    }
+    char = {
+     4: '-',
+     8: '-',
+     12: '-',
+     16: '-'
+    };
+    obj = '';
+    for (var i = 0; i < str.length; i++) {
+     obj += (char[i] || '') + str[i];
+    }
+    $scope.tempCardNumber = obj;
+   }
+  }
+
+  //if($scope.tempCardNumber.length > 23)	{
+  //$scope.tempCardNumber = $scope.tempCardNumber.substring(0,$scope.tempCardNumber.length-1);
+  //}
+ }
+
+ //this parses the CCN
+ $scope.parseCard = function() {
+  console.log("Went IN parseCard");
+  //execute parsing algorithm
+  var p = SwipeParserObj($scope.tempCardNumber);
+  $scope.CCDetails.cardNumber = p.account;
+  $scope.tempCardNumber = p.account;
+  $scope.CCDetails.cardExpiryMonth = p.exp_month;
+  $scope.CCDetails.cardExpiryYear = p.exp_year;
+  $scope.CCDetails.nameOnCard = p.account_name;
+  //						$scope.CCDetails.typOfCard = null;
+  //						$scope.CCDetails.typOfCardDesc = null;
+
+  console.log(p);
+
+ }
+
+
+
+
+
+
+
+
+
  /**
-*This is the code I used in the anugularjs controller to
-* -- detect if the user is doing a manual entry or swiping the magnetic stripe of the credit card (CC)
-* -- call the card reader object and parse the credit card number (CCN) string 
-* -- format the CCN
-* -- mask the CCN
-*/
-					$scope.tempCardNumber = "";
+  * /////// Card reader starts///////
+  * Modified by Mahmoud Kraiem based on Wayne Walrath's "JavaScript Magstripe (track 1, track2) data parser object" (2005)
+  * based on demo source code from www.skipjack.com
+  * This algorithm only supports track1 but can be reused to support other tracks 
+  */
 
-					$scope.swiping = false;
-					
-					// this detects if the user is doing a manual entry or swiping the magnetic stripe of the credit card (CC)
-					$scope.isNumberKey = function(event)
-									      {
-											 var charCode = event.which || event.keyCode;
-											 console.log(String.fromCharCode(charCode));
-											$scope.tempCardNumber = ($scope.tempCardNumber == null) ? $scope.tempCardNumber = "" : $scope.tempCardNumber;
-											if($scope.tempCardNumber == "" && charCode == 37)	{
-											$("#CCD").removeAttr("maxlength");
-											$scope.swiping = true;
-											return true;
-											}	else if($scope.swiping === true && $scope.tempCardNumber.indexOf("%") === 0)	{
-												if(String.fromCharCode(charCode)==="?")	{
-													$scope.tempCardNumber = $scope.tempCardNumber+"?";
-													$scope.swiping = false;
-													$scope.parseCard();
-													$("#CCD").attr("maxlength","19");
-													event.preventDefault();
-													return false;
-												}
-												return true;
-											}
-											else if($scope.swiping === false){
-												
-												var temp = $scope.tempCardNumber;
-												var count = (temp.match(/-/g) || []).length;
-												maxLength = (19+count).toString();
-												$("#CCD").attr("maxlength",maxLength);
-												
-								    		    if (charCode >= 48 && charCode <= 57) {
-								                    return true;
-								                }
-								                else {
-								                    event.preventDefault();
-								                    return false;
-								                }
-								    		    
-								    		    
-											}
-									      }
-					//////////////////////////////////////
-					
-					//this returns a masked CCN
-					$scope.maskCcn = function(n)	{
-						if(n!="" && n!=null) {
-						var cardArray = n.split("-");
-        				var re = /\d(?=\d{4})/gm; 
-        				var subst = 'x'; 
-        				var str = '';
-        				for (var i = 0; i < cardArray.length; i++) {
-        					str=str+cardArray[i];
-        					}
-        				 
-        				var result = str.replace(re, subst);
-        				char = {4:'-',8:'-',12:'-',16:'-'};
-					    obj = '';
-					    for (var i = 0; i < result.length; i++) {
-					        obj += (char[i]||'') + result[i];
-					    }
-					    return obj;
-						}
-					}
-					
-					// this formats the CCN
-					$scope.formatCardNumber = function() {
-						if($scope.tempCardNumber.indexOf("x") === -1 && $scope.tempCardNumber.indexOf("X") === -1)	{
-//							minimum size of CCN is 12, else modal is emptied when out of focus
-							if ($scope.tempCardNumber.length < 12) {
-								$scope.tempCardNumber="";
-							}else {
-								var obj = $scope.tempCardNumber;
-								console.log(obj);
-							    var numbers = obj.replace(/\D/g, '');
-							    $scope.CCDetails.cardNumber = numbers;
-							        char = {4:'-',8:'-',12:'-',16:'-'};
-							    obj = '';
-							    for (var i = 0; i < numbers.length; i++) {
-							        obj += (char[i]||'') + numbers[i];
-							    }
-							    $scope.tempCardNumber = obj;
-							}
-						}else {
-							if($scope.tempCardNumber!="" && $scope.tempCardNumber!=null) {
-								var cardArray =  $scope.tempCardNumber.split("-");
-	            				var str = '';
-	            				for (var i = 0; i < cardArray.length; i++) {
-	            					str=str+cardArray[i];
-	            					}
-								char = {4:'-',8:'-',12:'-',16:'-'};
-							    obj = '';
-							    for (var i = 0; i < str.length; i++) {
-							        obj += (char[i]||'') + str[i];
-							    }
-							    $scope.tempCardNumber = obj;
-							}
-						}
-						
-//						if($scope.tempCardNumber.length > 23)	{
-//							$scope.tempCardNumber = $scope.tempCardNumber.substring(0,$scope.tempCardNumber.length-1);
-//						}
-					}
-					
-					//this parses the CCN
-					$scope.parseCard = function(){
-						console.log("Went IN parseCard");
-						//execute parsing algorithm
-						var p = SwipeParserObj($scope.tempCardNumber);
-						$scope.CCDetails.cardNumber = p.account;
-						$scope.tempCardNumber = p.account;
-						$scope.CCDetails.cardExpiryMonth = p.exp_month;
-						$scope.CCDetails.cardExpiryYear = p.exp_year;
-						$scope.CCDetails.nameOnCard = p.account_name;
-//						$scope.CCDetails.typOfCard = null;
-//						$scope.CCDetails.typOfCardDesc = null;
-
-						console.log(p);
-										
-					} 
-					
-					
-					
-					
-					
-					
-					
-					
-
- /**
-* /////// Card reader starts///////
-*
-*/
- 
-//			Modified by Mahmoud Kraiem based on Wayne Walrath's "JavaScript Magstripe (track 1, track2) data parser object" (2005)
-//			based on demo source code from www.skipjack.com
-//			This algorithm only supports track1 but can be reused to support other tracks 
-
-//how to 
-//    var p = SwipeParserObj( strParse );
-//    
+ //how to 
+ //    var p = SwipeParserObj( strParse );
+ //    
 
 
-function SwipeParserObj(strParse)
-{
-    
-	var obj = {
-			input_trackdata_str : strParse,	
-			account_name : null,
-			account : null,
-			exp_month : null,
-			exp_year : null,
-			hasTrack1 : false,
-			cardType	: null,
-			bShowAlert : false
-			
-	}
+ function SwipeParserObj(strParse) {
 
-    
-    //sTrackData = obj.input_trackdata_str;     //--- Get the track data
-    
-  if ( strParse != '' )
-  {
+  var obj = {
+   input_trackdata_str: strParse,
+   account_name: null,
+   account: null,
+   exp_month: null,
+   exp_year: null,
+   hasTrack1: false,
+   cardType: null,
+   bShowAlert: false
 
-    //--- Determine the presence of special characters
-	if(strParse.indexOf("#")>0)	{
-	nHasTrack1 = strParse.indexOf("#");
-	seperator = "#";
-	}else if(strParse.indexOf("^")>0)	{
-	nHasTrack1 = strParse.indexOf("^");
-	seperator = "^";
-	}
-    
-    //--- Determine if it has track1
-	obj.hasTrack1 = bHasTrack1 = false;
-    if (nHasTrack1 > 0) { obj.hasTrack1 = bHasTrack1 = true; }
+  }
 
 
-      strCutUpSwipe = '' + strParse + ' ';
-      arrayStrSwipe = new Array(4);
-      arrayStrSwipe = strCutUpSwipe.split(seperator);
-  
-      var cardType;   
-  
-      if ( arrayStrSwipe.length > 2 )
-      {
-    	  obj.account =  stripAlpha( arrayStrSwipe[0].substring( 1,arrayStrSwipe[0].length) );
-    	  var str = arrayStrSwipe[1];
-  		  str = str.replace("/", " ");
-  		  str = str.trim();
-    	  obj.account_name = str;
-    	  obj.exp_month =  arrayStrSwipe[2].substring(2,4);
-    	  //obj.exp_year =  '20' + arrayStrSwipe[2].substring(0,2); 
-    	  obj.exp_year =  arrayStrSwipe[2].substring(0,2);
-    	  obj.cardType = obj.account.substring(0,1);
-  
-      }
-      else 
-      { 
-    	  obj.bShowAlert = true;  //--- Error -- show alert message
-      }
-    
+  //sTrackData = obj.input_trackdata_str;     //--- Get the track data
+
+  if (strParse != '') {
+
+   //--- Determine the presence of special characters
+   if (strParse.indexOf("#") > 0) {
+    nHasTrack1 = strParse.indexOf("#");
+    seperator = "#";
+   } else if (strParse.indexOf("^") > 0) {
+    nHasTrack1 = strParse.indexOf("^");
+    seperator = "^";
+   }
+
+   //--- Determine if it has track1
+   obj.hasTrack1 = bHasTrack1 = false;
+   if (nHasTrack1 > 0) {
+    obj.hasTrack1 = bHasTrack1 = true;
+   }
+
+
+   strCutUpSwipe = '' + strParse + ' ';
+   arrayStrSwipe = new Array(4);
+   arrayStrSwipe = strCutUpSwipe.split(seperator);
+
+   var cardType;
+
+   if (arrayStrSwipe.length > 2) {
+    obj.account = stripAlpha(arrayStrSwipe[0].substring(1, arrayStrSwipe[0].length));
+    var str = arrayStrSwipe[1];
+    str = str.replace("/", " ");
+    str = str.trim();
+    obj.account_name = str;
+    obj.exp_month = arrayStrSwipe[2].substring(2, 4);
+    //obj.exp_year =  '20' + arrayStrSwipe[2].substring(0,2); 
+    obj.exp_year = arrayStrSwipe[2].substring(0, 2);
+    obj.cardType = obj.account.substring(0, 1);
+
+   } else {
+    obj.bShowAlert = true; //--- Error -- show alert message
+   }
+
   } //--- end "if ( strParse != '' )"
 
-  function stripAlpha(sInput){
-      if( sInput == null )    return '';
-      return sInput.replace(/[^0-9]/g, '');
+  function stripAlpha(sInput) {
+   if (sInput == null) return '';
+   return sInput.replace(/[^0-9]/g, '');
   }
-    
-   return obj;
 
-}
-/////// Card reader ends///////
+  return obj;
+
+ }
+ /////// Card reader ends///////
