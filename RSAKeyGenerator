@@ -1,5 +1,3 @@
-
-
 /**
  * Solution for RSA key pairs generation and testing
  * @author Mahmoud Kraiem
@@ -60,488 +58,484 @@ import javax.xml.bind.DatatypeConverter;
  * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
  *
  */
-public class RSAKeyGenerator  {
-	
-	public static void main(String[] args) throws Exception  {
-		String path = "D:\\NEWKEYS";
-		try {
-			
-			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-			/**
-			 * /////// Key pair generation///////
-			 */
+public class RSAKeyGenerator {
 
-//			kpg.initialize(1024);
-//			KeyPair kp = kpg.genKeyPair();
-//			byte[] pub = kp.getPublic().getEncoded();
-//			byte[] priv = kp.getPrivate().getEncoded();
-//			
-//			
-//			// Store Public Key.
-//			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
-//					pub);
-//			String fileName = path + "/publicKey.key";
-//			saveKeySpecToFile(fileName, x509EncodedKeySpec );
-//						
-//			// Store Private Key.
-//			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
-//					priv);
-//			fileName = path + "/privateKey.key";
-//			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
-//
-//			dumpKeyPair(kp);
+ public static void main(String[] args) throws Exception {
+  String path = "D:\\NEWKEYS";
+  try {
 
-			/**
-			 * /////// Key pair generation ENDS HERE///////
-			 */
-			
-		
-			/**
-			 * /////// Key pair conversion to .NET xml format ///////
-			 */
-			
-//			String keyFilePath = path + "/privateKey.key";
-//			PrivateKey privateKey = readKeyFromFilePrivate(keyFilePath);
-//			String xmlString = getPrivateKeyXml(privateKey);
-//			String xmlkeyFilePath = path+"/privateKey.xml";
-//			saveStringToFile(xmlkeyFilePath,xmlString);
-//			
-//			keyFilePath = path + "/publicKey.key";
-//			PublicKey publicKey = readKeyFromFilePublic(keyFilePath);
-//			xmlString = getPublicKeyXml(publicKey);
-//			xmlkeyFilePath = path+"/publicKey.xml";
-//			saveStringToFile(xmlkeyFilePath,xmlString);
-//			
-			
-			/**
-			 * /////// Key pair conversion to .NET xml format ENDS HERE ///////
-			 */
-			
-			
-			/**
-			 * /////// Key pair testing STARTS HERE ///////
-			 */
-			
-			
-//			String privateKeyFilePath = path + "/privateKey.key";
-//			String publicKeyFilePath = path + "/publicKey.key";
-//
-//			String encryptedMessage = "";
-//			String openMessage = "";
-//
-//
-//			byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
-//			String decryptedMessage = rsaDecrypt(encryptedMessageBA,privateKeyFilePath);
-//			System.out.println("decrypted message = "+decryptedMessage);
-//			
-//			
-//			byte[] encryptedMessageBA=rsaEncrypt(decryptedMessage.getBytes(), publicKeyFilePath);
-//			String encryptedMessage=convertEncryptedByteToString(encryptedMessageBA);
-//			System.out.println("encrypted message = "+encryptedMessage);
-			
-			/**
-			 * /////// Key pair testing ENDS HERE ///////
-			 */
-			
-			
-			
-			/**
-			 * /////// XML Key pair testing STARTS HERE ///////
-			 */
-			
-			
-			String privateKeyFilePath = path + "/privateKey.xml";
-			String publicKeyFilePath = path + "/publicKey.xml";
-			String encryptedMessage = "";
-			String decryptedMessage = "";
-			String openString = "";
-			
-			Properties privateKeyProperties = new Properties();
-			privateKeyProperties = readPropertiesXmlFile(privateKeyFilePath);
-			PrivateKey priv = propertiesToPrivateKey(privateKeyProperties);
-			
-			Properties publicKeyProperties = new Properties();
-			publicKeyProperties = readPropertiesXmlFile(publicKeyFilePath);
-			PublicKey pub = propertiesToPublicKey(publicKeyProperties);
-			
-			byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
-			String decryptedMessage = rsaDecryptXMLTest(encryptedMessageBA,priv);
-			System.out.println("decrypted message = "+decryptedMessage);
-			
-			byte[] encryptedMessageBA=rsaEncryptXMLTest(decryptedMessage.getBytes(), pub);
-			String encryptedMessage=convertEncryptedByteToString(encryptedMessageBA);
-			System.out.println("encrypted message = "+encryptedMessage);
-			
-			
-			
-			/**
-			 * /////// XML Key pair testing ENDS HERE ///////
-			 */
-		
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		
+   KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+   /**
+    * /////// Key pair generation///////
+    */
 
-	}
+   //			kpg.initialize(1024);
+   //			KeyPair kp = kpg.genKeyPair();
+   //			byte[] pub = kp.getPublic().getEncoded();
+   //			byte[] priv = kp.getPrivate().getEncoded();
+   //			
+   //			
+   //			// Store Public Key.
+   //			X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
+   //					pub);
+   //			String fileName = path + "/publicKey.key";
+   //			saveKeySpecToFile(fileName, x509EncodedKeySpec );
+   //						
+   //			// Store Private Key.
+   //			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
+   //					priv);
+   //			fileName = path + "/privateKey.key";
+   //			saveKeySpecToFile(fileName, pkcs8EncodedKeySpec );
+   //
+   //			dumpKeyPair(kp);
+
+   /**
+    * /////// Key pair generation ENDS HERE///////
+    */
 
 
-	
-	public static Properties readPropertiesXmlFile (String filename) {
-		
-		File file = new File(filename);
-		Properties properties = new Properties();
-		try {
-			
-			FileInputStream fileInput = new FileInputStream(file);
-			
-			properties.loadFromXML(fileInput);
-			fileInput.close();
+   /**
+    * /////// Key pair conversion to .NET xml format ///////
+    */
 
-			Enumeration enuKeys = properties.keys();
-			while (enuKeys.hasMoreElements()) {
-				String key = (String) enuKeys.nextElement();
-				String value = properties.getProperty(key);
-				System.out.println(key + ": " + value);
-			}
-			
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return properties;
-	}
-	
-	
-	public static PrivateKey propertiesToPrivateKey (Properties properties) {
-		
-		
-		BigInteger privateExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("D")));
-		
-		/* comment or uncomment this part depending on your needs */
-//		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("D")),StandardCharsets.UTF_8);
-//		System.out.println("##properties.getProperty");
-//		System.out.println(properties.getProperty("D"));
-//		System.out.println("##convertEncrytedStringToByteArray");
-//		System.out.println(convertEncrytedStringToByteArray(properties.getProperty("D")));
-//		System.out.println("##byte[] to String");
-//		System.out.println(pe);
-//		BigInteger privateExponent = new BigInteger(pe.replace(" ", ""),16);
-		
-		BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
-//		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
-//		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
+   //			String keyFilePath = path + "/privateKey.key";
+   //			PrivateKey privateKey = readKeyFromFilePrivate(keyFilePath);
+   //			String xmlString = getPrivateKeyXml(privateKey);
+   //			String xmlkeyFilePath = path+"/privateKey.xml";
+   //			saveStringToFile(xmlkeyFilePath,xmlString);
+   //			
+   //			keyFilePath = path + "/publicKey.key";
+   //			PublicKey publicKey = readKeyFromFilePublic(keyFilePath);
+   //			xmlString = getPublicKeyXml(publicKey);
+   //			xmlkeyFilePath = path+"/publicKey.xml";
+   //			saveStringToFile(xmlkeyFilePath,xmlString);
+   //			
 
-        try {                    
-            RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(modulus, privateExponent);
-
-            KeyFactory factory = KeyFactory.getInstance("RSA");
-
-            PrivateKey priv = factory.generatePrivate(privateSpec); 
-
-            System.out.println("Private Key : "+ convertEncryptedByteToString( priv.getEncoded() ));
-			
-			return priv;
-        }                        
-        catch( Exception e ) {   
-            System.out.println(e.toString());  
-				return null;
-        } 
-		
-	}
-	
-	
-	
-	public static PublicKey propertiesToPublicKey (Properties properties) {
-	
-		
-		BigInteger publicExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
-//		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
-//		BigInteger publicExponent = new BigInteger(pe.replace(" ", ""),16);
-		
-		BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
-//		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
-//		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
-
-        try {                    
-            RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, publicExponent);
-
-            KeyFactory factory = KeyFactory.getInstance("RSA");
-
-            PublicKey pub = factory.generatePublic(publicSpec);
-
-            System.out.println("Public Key : "+ convertEncryptedByteToString( pub.getEncoded() ));
-			
-			return pub;
-        }                        
-        catch( Exception e ) {   
-            System.out.println(e.toString());   
-				return null;
-        }
-
-	}
-	
-	
-	public  static byte[] rsaEncryptXMLTest(byte[] data, PublicKey pubKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
-		  Cipher cipher = Cipher.getInstance("RSA");
-		  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-		  byte[] cipherData = cipher.doFinal(data);
-		  return cipherData;
-		}
-	
-	public static  String rsaDecryptXMLTest(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
-		  Cipher cipher = Cipher.getInstance("RSA");
-		  cipher.init(Cipher.DECRYPT_MODE, privateKey);
-		  byte[] cipherData = cipher.doFinal(data);
-		  String decryptedText = new String(cipherData);
-		  return decryptedText;
-		}
-	
-	
-	public static void saveKeySpecToFile(String fileName, EncodedKeySpec encodedKeySpec ) throws IOException {
-		  
-		  FileOutputStream fos = new FileOutputStream(fileName);
-		  
-		  try {
-			 fos.write(encodedKeySpec.getEncoded());
-		  } catch (Exception e) {
-		    throw new IOException("Unexpected error", e);
-		  } finally {
-			  fos.close();
-		  }
-		}
-	
-	
-	
-	
-	private static void dumpKeyPair(KeyPair keyPair) {
-		PublicKey pub = keyPair.getPublic();
-		
-		System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pub.getEncoded()));
- 
-		PrivateKey priv = keyPair.getPrivate();
-		
-		System.out.println("Private Key: " + DatatypeConverter.printBase64Binary(priv.getEncoded()));
-	}
-	
-	
-	/**
-	   * Gets the RSA Public key as XML string.
-	   * @param key RSAPublicKey
-	   * @return String XML representation of RSA Public Key.
-	   * @throws UnsupportedEncodingException
-	   */
-	 private static String getPublicKeyXml(PublicKey pk) throws UnsupportedEncodingException {
-
-		 RSAPublicKey  privKey = (RSAPublicKey) pk;
-		    StringBuilder builder = new StringBuilder();
-		    builder.append("<RSAKeyValue>\n");
-
-		    byte[] m = privKey.getModulus().toByteArray();
-			/* comment or uncomment this part depending on your needs */
-//		    byte[] mm = stripLeadingZeros(m);
-		    byte[] mm = (m);
-
-		    write(builder, "Modulus", mm);
-		    write(builder, "Exponent", privKey.getPublicExponent());
-
-		    builder.append("</RSAKeyValue>");
-
-		    return builder.toString();
-		}
-	 
-	 /**
-	  * Gets the RSA Private key as XML string.
-	  * @param PrivateKey
-	  * @return String XML representation of RSA Private Key.
-	  * @throws UnsupportedEncodingException
-	  */
-
-		private static String getPrivateKeyXml(PrivateKey pk) throws UnsupportedEncodingException {
-		    RSAPrivateCrtKey privKey = (RSAPrivateCrtKey) pk;
-		    BigInteger n = privKey.getModulus();
-		    BigInteger e = privKey.getPublicExponent();
-		    BigInteger d = privKey.getPrivateExponent();
-		    BigInteger p = privKey.getPrimeP();
-		    BigInteger q = privKey.getPrimeQ();
-		    BigInteger dp = privKey.getPrimeExponentP();
-		    BigInteger dq = privKey.getPrimeExponentQ();
-		    BigInteger inverseQ = privKey.getCrtCoefficient();
-/* comment or uncomment this part depending on your needs */
-//		    StringBuilder builder = new StringBuilder();
-//		    builder.append("<RSAKeyValue>\n");
-//		    write(builder, "Modulus", stripLeadingZeros(n.toByteArray()));
-//		    write(builder, "Exponent", stripLeadingZeros(e.toByteArray()));
-//		    write(builder, "P", stripLeadingZeros(p.toByteArray()));
-//		    write(builder, "Q", stripLeadingZeros(q.toByteArray()));
-//		    write(builder, "DP", stripLeadingZeros(dp.toByteArray()));
-//		    write(builder, "DQ", stripLeadingZeros(dq.toByteArray()));
-//		    write(builder, "InverseQ", stripLeadingZeros(inverseQ.toByteArray()));
-//		    write(builder, "D", stripLeadingZeros(d.toByteArray()));
-//		    builder.append("</RSAKeyValue>");
-		    
-		    
-		    StringBuilder builder = new StringBuilder();
-		    builder.append("<RSAKeyValue>\n");
-		    write(builder, "Modulus", (n.toByteArray()));
-		    write(builder, "Exponent", (e.toByteArray()));
-		    write(builder, "P", (p.toByteArray()));
-		    write(builder, "Q", (q.toByteArray()));
-		    write(builder, "DP", (dp.toByteArray()));
-		    write(builder, "DQ", (dq.toByteArray()));
-		    write(builder, "InverseQ", (inverseQ.toByteArray()));
-		    write(builder, "D", (d.toByteArray()));
-		    builder.append("</RSAKeyValue>");
-		    
-		    
-
-		    return builder.toString();
-		}
-
-		private static void write(StringBuilder builder, String tag, byte[] bigInt) throws UnsupportedEncodingException {
-		    builder.append("\t<");
-		    builder.append(tag);
-		    builder.append(">");
-		    builder.append(encode(bigInt).trim());
-		    builder.append("</");
-		    builder.append(tag);
-		    builder.append(">\n");
-		}
-
-		private static void write(StringBuilder builder, String tag, BigInteger bigInt) throws UnsupportedEncodingException {
-		    builder.append("\t<");
-		    builder.append(tag);
-		    builder.append(">");
-		    builder.append(encode(bigInt));
-		    builder.append("</");
-		    builder.append(tag);
-		    builder.append(">\n");
-		}
-
-		private static String encode(BigInteger bigInt) throws UnsupportedEncodingException {
-		    return new String(new sun.misc.BASE64Encoder().encode(bigInt.toByteArray()));
-		}
-
-		private static String encode(byte[] bigInt) throws UnsupportedEncodingException {
-		    return new String(new sun.misc.BASE64Encoder().encode(bigInt));
-		}
-
-		private static byte[] stripLeadingZeros(byte[] a) {
-		    int lastZero = -1;
-		    for (int i = 0; i < a.length; i++) {
-		        if (a[i] == 0) {
-		            lastZero = i;
-		        } else {
-		            break;
-		        }
-		    }
-		    lastZero++;
-		    byte[] result = new byte[a.length - lastZero];
-		    System.arraycopy(a, lastZero, result, 0, result.length);
-		    return result;
-		}
-		
-		
-		 public static PublicKey readKeyFromFilePublicNEW(String keyFilePath) throws IOException {
-			  
-			    File f = new File( keyFilePath );
-			    FileInputStream fis = new FileInputStream(f);
-			    DataInputStream dis = new DataInputStream(fis);
-			    
-			    byte[] EncodedkeyBytes = new byte[(int)f.length()];
-			    try {
-			    dis.readFully(EncodedkeyBytes);
-			    
-			    
-	  //FOR TESTING PURPOSE ONLY
+   /**
+    * /////// Key pair conversion to .NET xml format ENDS HERE ///////
+    */
 
 
-			    X509EncodedKeySpec spec = new X509EncodedKeySpec(EncodedkeyBytes);
-			    KeyFactory fact1 = KeyFactory.getInstance("RSA");
-			    PublicKey  publ = fact1.generatePublic(spec);
-			    return publ;
-			  
-			  } catch (Exception e) {
-			    throw new RuntimeException("Spurious serialisation error", e);
-			  } finally {
-				  dis.close();
-			  }
-			}
-		 
-		 
-		 public static PrivateKey  readKeyFromFilePrivateNEW(String keyFilePath) throws IOException {
-			    
-			    File f = new File(keyFilePath );
-			    FileInputStream fis = new FileInputStream(f);
-			    DataInputStream dis = new DataInputStream(fis);
-				  
-			    try {
-				    byte[] EncodedkeyBytes = new byte[(int)f.length()];
-				    dis.readFully(EncodedkeyBytes);
-			    
-			    PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(EncodedkeyBytes);
-			    KeyFactory fact1 = KeyFactory.getInstance("RSA");
-			    PrivateKey privateKey = fact1.generatePrivate(keySpec1);
-		    
-			    return privateKey;
-			  } catch (Exception e) {
-			    throw new RuntimeException("Spurious serialisation error", e);
-			  } finally {
-				  dis.close();
-			  }
-			}
-		 
-		 
-		 public static void saveStringToFile(String fileName, String s ) throws IOException {
-			  
-			  FileOutputStream fos = new FileOutputStream(fileName);
+   /**
+    * /////// Key pair testing STARTS HERE ///////
+    */
 
-			  try {
-				 fos.write(s.getBytes()); //check which charset is required on .NET application
-			  } catch (Exception e) {
-			    throw new IOException("Unexpected error", e);
-			  } finally {
-				  fos.close();
-//			    oout.close();
-			  }
-			}
-		 
-		 public  static byte[] rsaEncrypt(byte[] data,String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
-			  PublicKey pubKey = readKeyFromFilePublicNEW(fileName);
-			  System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pubKey.getEncoded()));
-			  Cipher cipher = Cipher.getInstance("RSA");
-			  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-			  byte[] cipherData = cipher.doFinal(data);
-			  return cipherData;
-			}
-		
-		public static  String rsaDecrypt(byte[] data,String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
-			  PrivateKey privateKey = readKeyFromFilePrivateNEW(fileName);
-			  Cipher cipher = Cipher.getInstance("RSA");
-			  cipher.init(Cipher.DECRYPT_MODE, privateKey);
-			  
-			  System.out.println("message size in bytes" + data.length);
-			  byte[] cipherData = cipher.doFinal(data);
-			  String decryptedText = new String(cipherData);
-			  return decryptedText;
-			}
-		
-		public static byte[] convertEncrytedStringToByteArray(String encryptedString){
-			//return DatatypeConverter.parseHexBinary(encryptedString);
-			return DatatypeConverter.parseBase64Binary(encryptedString);
-//			 Base64.Decoder decodeExt = Base64.getDecoder();
-//			 return decodeExt.decode(encryptedString);
-		}
 
-		
-		public static  String convertEncryptedByteToString(byte[] encryptedByte){
-			return DatatypeConverter.printBase64Binary(encryptedByte);
-		}
-		
-		
+   //			String privateKeyFilePath = path + "/privateKey.key";
+   //			String publicKeyFilePath = path + "/publicKey.key";
+   //
+   //			String encryptedMessage = "";
+   //			String openMessage = "";
+   //
+   //
+   //			byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
+   //			String decryptedMessage = rsaDecrypt(encryptedMessageBA,privateKeyFilePath);
+   //			System.out.println("decrypted message = "+decryptedMessage);
+   //			
+   //			
+   //			byte[] encryptedMessageBA=rsaEncrypt(decryptedMessage.getBytes(), publicKeyFilePath);
+   //			String encryptedMessage=convertEncryptedByteToString(encryptedMessageBA);
+   //			System.out.println("encrypted message = "+encryptedMessage);
+
+   /**
+    * /////// Key pair testing ENDS HERE ///////
+    */
+
+
+
+   /**
+    * /////// XML Key pair testing STARTS HERE ///////
+    */
+
+
+   String privateKeyFilePath = path + "/privateKey.xml";
+   String publicKeyFilePath = path + "/publicKey.xml";
+   String encryptedMessage = "";
+   String decryptedMessage = "";
+   String openString = "";
+
+   Properties privateKeyProperties = new Properties();
+   privateKeyProperties = readPropertiesXmlFile(privateKeyFilePath);
+   PrivateKey priv = propertiesToPrivateKey(privateKeyProperties);
+
+   Properties publicKeyProperties = new Properties();
+   publicKeyProperties = readPropertiesXmlFile(publicKeyFilePath);
+   PublicKey pub = propertiesToPublicKey(publicKeyProperties);
+
+   byte[] encryptedMessageBA = convertEncrytedStringToByteArray(encryptedMessage);
+   String decryptedMessage = rsaDecryptXMLTest(encryptedMessageBA, priv);
+   System.out.println("decrypted message = " + decryptedMessage);
+
+   byte[] encryptedMessageBA = rsaEncryptXMLTest(decryptedMessage.getBytes(), pub);
+   String encryptedMessage = convertEncryptedByteToString(encryptedMessageBA);
+   System.out.println("encrypted message = " + encryptedMessage);
+
+
+
+   /**
+    * /////// XML Key pair testing ENDS HERE ///////
+    */
+
+  } catch (NoSuchAlgorithmException e) {
+   e.printStackTrace();
+  }
+
+
+ }
+
+
+
+ public static Properties readPropertiesXmlFile(String filename) {
+
+  File file = new File(filename);
+  Properties properties = new Properties();
+  try {
+
+   FileInputStream fileInput = new FileInputStream(file);
+
+   properties.loadFromXML(fileInput);
+   fileInput.close();
+
+   Enumeration enuKeys = properties.keys();
+   while (enuKeys.hasMoreElements()) {
+    String key = (String) enuKeys.nextElement();
+    String value = properties.getProperty(key);
+    System.out.println(key + ": " + value);
+   }
+
+
+  } catch (FileNotFoundException e) {
+   e.printStackTrace();
+  } catch (IOException e) {
+   e.printStackTrace();
+  }
+
+  return properties;
+ }
+
+
+ public static PrivateKey propertiesToPrivateKey(Properties properties) {
+
+
+  BigInteger privateExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("D")));
+
+  /* comment or uncomment this part depending on your needs */
+  //		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("D")),StandardCharsets.UTF_8);
+  //		System.out.println("##properties.getProperty");
+  //		System.out.println(properties.getProperty("D"));
+  //		System.out.println("##convertEncrytedStringToByteArray");
+  //		System.out.println(convertEncrytedStringToByteArray(properties.getProperty("D")));
+  //		System.out.println("##byte[] to String");
+  //		System.out.println(pe);
+  //		BigInteger privateExponent = new BigInteger(pe.replace(" ", ""),16);
+
+  BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+  //		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+  //		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
+
+  try {
+   RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(modulus, privateExponent);
+
+   KeyFactory factory = KeyFactory.getInstance("RSA");
+
+   PrivateKey priv = factory.generatePrivate(privateSpec);
+
+   System.out.println("Private Key : " + convertEncryptedByteToString(priv.getEncoded()));
+
+   return priv;
+  } catch (Exception e) {
+   System.out.println(e.toString());
+   return null;
+  }
+
+ }
+
+
+
+ public static PublicKey propertiesToPublicKey(Properties properties) {
+
+
+  BigInteger publicExponent = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
+  //		String pe = new String( convertEncrytedStringToByteArray(properties.getProperty("Exponent")));
+  //		BigInteger publicExponent = new BigInteger(pe.replace(" ", ""),16);
+
+  BigInteger modulus = new BigInteger(convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+  //		String m = new String( convertEncrytedStringToByteArray(properties.getProperty("Modulus")));
+  //		BigInteger modulus = new BigInteger(m.replace(" ", ""),16);
+
+  try {
+   RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, publicExponent);
+
+   KeyFactory factory = KeyFactory.getInstance("RSA");
+
+   PublicKey pub = factory.generatePublic(publicSpec);
+
+   System.out.println("Public Key : " + convertEncryptedByteToString(pub.getEncoded()));
+
+   return pub;
+  } catch (Exception e) {
+   System.out.println(e.toString());
+   return null;
+  }
+
+ }
+
+
+ public static byte[] rsaEncryptXMLTest(byte[] data, PublicKey pubKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+  Cipher cipher = Cipher.getInstance("RSA");
+  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+  byte[] cipherData = cipher.doFinal(data);
+  return cipherData;
+ }
+
+ public static String rsaDecryptXMLTest(byte[] data, PrivateKey privateKey) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+  Cipher cipher = Cipher.getInstance("RSA");
+  cipher.init(Cipher.DECRYPT_MODE, privateKey);
+  byte[] cipherData = cipher.doFinal(data);
+  String decryptedText = new String(cipherData);
+  return decryptedText;
+ }
+
+
+ public static void saveKeySpecToFile(String fileName, EncodedKeySpec encodedKeySpec) throws IOException {
+
+  FileOutputStream fos = new FileOutputStream(fileName);
+
+  try {
+   fos.write(encodedKeySpec.getEncoded());
+  } catch (Exception e) {
+   throw new IOException("Unexpected error", e);
+  } finally {
+   fos.close();
+  }
+ }
+
+
+
+
+ private static void dumpKeyPair(KeyPair keyPair) {
+  PublicKey pub = keyPair.getPublic();
+
+  System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pub.getEncoded()));
+
+  PrivateKey priv = keyPair.getPrivate();
+
+  System.out.println("Private Key: " + DatatypeConverter.printBase64Binary(priv.getEncoded()));
+ }
+
+
+ /**
+  * Gets the RSA Public key as XML string.
+  * @param key RSAPublicKey
+  * @return String XML representation of RSA Public Key.
+  * @throws UnsupportedEncodingException
+  */
+ private static String getPublicKeyXml(PublicKey pk) throws UnsupportedEncodingException {
+
+  RSAPublicKey privKey = (RSAPublicKey) pk;
+  StringBuilder builder = new StringBuilder();
+  builder.append("<RSAKeyValue>\n");
+
+  byte[] m = privKey.getModulus().toByteArray();
+  /* comment or uncomment this part depending on your needs */
+  //		    byte[] mm = stripLeadingZeros(m);
+  byte[] mm = (m);
+
+  write(builder, "Modulus", mm);
+  write(builder, "Exponent", privKey.getPublicExponent());
+
+  builder.append("</RSAKeyValue>");
+
+  return builder.toString();
+ }
+
+ /**
+  * Gets the RSA Private key as XML string.
+  * @param PrivateKey
+  * @return String XML representation of RSA Private Key.
+  * @throws UnsupportedEncodingException
+  */
+
+ private static String getPrivateKeyXml(PrivateKey pk) throws UnsupportedEncodingException {
+  RSAPrivateCrtKey privKey = (RSAPrivateCrtKey) pk;
+  BigInteger n = privKey.getModulus();
+  BigInteger e = privKey.getPublicExponent();
+  BigInteger d = privKey.getPrivateExponent();
+  BigInteger p = privKey.getPrimeP();
+  BigInteger q = privKey.getPrimeQ();
+  BigInteger dp = privKey.getPrimeExponentP();
+  BigInteger dq = privKey.getPrimeExponentQ();
+  BigInteger inverseQ = privKey.getCrtCoefficient();
+  /* comment or uncomment this part depending on your needs */
+  //		    StringBuilder builder = new StringBuilder();
+  //		    builder.append("<RSAKeyValue>\n");
+  //		    write(builder, "Modulus", stripLeadingZeros(n.toByteArray()));
+  //		    write(builder, "Exponent", stripLeadingZeros(e.toByteArray()));
+  //		    write(builder, "P", stripLeadingZeros(p.toByteArray()));
+  //		    write(builder, "Q", stripLeadingZeros(q.toByteArray()));
+  //		    write(builder, "DP", stripLeadingZeros(dp.toByteArray()));
+  //		    write(builder, "DQ", stripLeadingZeros(dq.toByteArray()));
+  //		    write(builder, "InverseQ", stripLeadingZeros(inverseQ.toByteArray()));
+  //		    write(builder, "D", stripLeadingZeros(d.toByteArray()));
+  //		    builder.append("</RSAKeyValue>");
+
+
+  StringBuilder builder = new StringBuilder();
+  builder.append("<RSAKeyValue>\n");
+  write(builder, "Modulus", (n.toByteArray()));
+  write(builder, "Exponent", (e.toByteArray()));
+  write(builder, "P", (p.toByteArray()));
+  write(builder, "Q", (q.toByteArray()));
+  write(builder, "DP", (dp.toByteArray()));
+  write(builder, "DQ", (dq.toByteArray()));
+  write(builder, "InverseQ", (inverseQ.toByteArray()));
+  write(builder, "D", (d.toByteArray()));
+  builder.append("</RSAKeyValue>");
+
+
+
+  return builder.toString();
+ }
+
+ private static void write(StringBuilder builder, String tag, byte[] bigInt) throws UnsupportedEncodingException {
+  builder.append("\t<");
+  builder.append(tag);
+  builder.append(">");
+  builder.append(encode(bigInt).trim());
+  builder.append("</");
+  builder.append(tag);
+  builder.append(">\n");
+ }
+
+ private static void write(StringBuilder builder, String tag, BigInteger bigInt) throws UnsupportedEncodingException {
+  builder.append("\t<");
+  builder.append(tag);
+  builder.append(">");
+  builder.append(encode(bigInt));
+  builder.append("</");
+  builder.append(tag);
+  builder.append(">\n");
+ }
+
+ private static String encode(BigInteger bigInt) throws UnsupportedEncodingException {
+  return new String(new sun.misc.BASE64Encoder().encode(bigInt.toByteArray()));
+ }
+
+ private static String encode(byte[] bigInt) throws UnsupportedEncodingException {
+  return new String(new sun.misc.BASE64Encoder().encode(bigInt));
+ }
+
+ private static byte[] stripLeadingZeros(byte[] a) {
+  int lastZero = -1;
+  for (int i = 0; i < a.length; i++) {
+   if (a[i] == 0) {
+    lastZero = i;
+   } else {
+    break;
+   }
+  }
+  lastZero++;
+  byte[] result = new byte[a.length - lastZero];
+  System.arraycopy(a, lastZero, result, 0, result.length);
+  return result;
+ }
+
+
+ public static PublicKey readKeyFromFilePublicNEW(String keyFilePath) throws IOException {
+
+  File f = new File(keyFilePath);
+  FileInputStream fis = new FileInputStream(f);
+  DataInputStream dis = new DataInputStream(fis);
+
+  byte[] EncodedkeyBytes = new byte[(int) f.length()];
+  try {
+   dis.readFully(EncodedkeyBytes);
+
+
+   //FOR TESTING PURPOSE ONLY
+
+
+   X509EncodedKeySpec spec = new X509EncodedKeySpec(EncodedkeyBytes);
+   KeyFactory fact1 = KeyFactory.getInstance("RSA");
+   PublicKey publ = fact1.generatePublic(spec);
+   return publ;
+
+  } catch (Exception e) {
+   throw new RuntimeException("Spurious serialisation error", e);
+  } finally {
+   dis.close();
+  }
+ }
+
+
+ public static PrivateKey readKeyFromFilePrivateNEW(String keyFilePath) throws IOException {
+
+  File f = new File(keyFilePath);
+  FileInputStream fis = new FileInputStream(f);
+  DataInputStream dis = new DataInputStream(fis);
+
+  try {
+   byte[] EncodedkeyBytes = new byte[(int) f.length()];
+   dis.readFully(EncodedkeyBytes);
+
+   PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(EncodedkeyBytes);
+   KeyFactory fact1 = KeyFactory.getInstance("RSA");
+   PrivateKey privateKey = fact1.generatePrivate(keySpec1);
+
+   return privateKey;
+  } catch (Exception e) {
+   throw new RuntimeException("Spurious serialisation error", e);
+  } finally {
+   dis.close();
+  }
+ }
+
+
+ public static void saveStringToFile(String fileName, String s) throws IOException {
+
+  FileOutputStream fos = new FileOutputStream(fileName);
+
+  try {
+   fos.write(s.getBytes()); //check which charset is required on .NET application
+  } catch (Exception e) {
+   throw new IOException("Unexpected error", e);
+  } finally {
+   fos.close();
+   //			    oout.close();
+  }
+ }
+
+ public static byte[] rsaEncrypt(byte[] data, String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+  PublicKey pubKey = readKeyFromFilePublicNEW(fileName);
+  System.out.println("Public Key: " + DatatypeConverter.printBase64Binary(pubKey.getEncoded()));
+  Cipher cipher = Cipher.getInstance("RSA");
+  cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+  byte[] cipherData = cipher.doFinal(data);
+  return cipherData;
+ }
+
+ public static String rsaDecrypt(byte[] data, String fileName) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+  PrivateKey privateKey = readKeyFromFilePrivateNEW(fileName);
+  Cipher cipher = Cipher.getInstance("RSA");
+  cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+  System.out.println("message size in bytes" + data.length);
+  byte[] cipherData = cipher.doFinal(data);
+  String decryptedText = new String(cipherData);
+  return decryptedText;
+ }
+
+ public static byte[] convertEncrytedStringToByteArray(String encryptedString) {
+  //return DatatypeConverter.parseHexBinary(encryptedString);
+  return DatatypeConverter.parseBase64Binary(encryptedString);
+  //			 Base64.Decoder decodeExt = Base64.getDecoder();
+  //			 return decodeExt.decode(encryptedString);
+ }
+
+
+ public static String convertEncryptedByteToString(byte[] encryptedByte) {
+  return DatatypeConverter.printBase64Binary(encryptedByte);
+ }
+
+
 }
-
-
