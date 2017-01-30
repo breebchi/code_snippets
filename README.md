@@ -7,12 +7,9 @@ I made this class to serve purpose and eventually thought it would be nice to cl
 Many people codes have been used so please inform me if you recognize your code so that I'd add a mention of that.
 
 HOW TO USE IT :
-/**
- * 
+ 
  * Make a new Java project and run this code as a Java application
- * 
- * 
- * 
+ 
  * Notice code is divided into 4 blocks
  * Use them respectively to :
  * -- 	generate new pairs of RSA keys of desired size [It's set to 1024 keys as is]
@@ -24,5 +21,3 @@ HOW TO USE IT :
  * - provide path and file name
  * - copy/past rsaencrypt/rsadecrypt blocks [as shown] to test encryption then decryption or the reverse.
  * comment all non-relevant code [only 1 in 4 up here mentioned blocks should be uncommented]
- *
- */
